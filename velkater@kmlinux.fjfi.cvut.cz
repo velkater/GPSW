@@ -1,0 +1,231 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Zobecněný pseudopalindromický uzávěr"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Funkce pro vytvoření zobecněného pseudopalindromického uzávěru"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "def isPal(seq):\n",
+    "    \"kontroluje jestli řetězec je palindrom\"\n",
+    "    l = len(seq)\n",
+    "    if l == 1:\n",
+    "        return(True)\n",
+    "    for x in range(0, l//2):\n",
+    "        if seq[x] != seq[l-1-x]:\n",
+    "            return(False)\n",
+    "    return(True)\n",
+    "\n",
+    "def isEpal(seq):\n",
+    "    \"kontroluje jestli řetězec je pseudopalindrom\"\n",
+    "    l = len(seq)\n",
+    "    if l%2 == 1:\n",
+    "        return(False)\n",
+    "    for x in range(0, l//2):\n",
+    "        if seq[x] == seq[l-1-x]:\n",
+    "            return(False)\n",
+    "    return(True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "def makePalClosure (seq):\n",
+    "    \"udělá z řetězce palindromický uzávěr\"\n",
+    "    if isPal(seq) == True:\n",
+    "        return(seq)\n",
+    "    i = 1\n",
+    "    while isPal(seq[i:]) != True:\n",
+    "        i = i+1\n",
+    "    #print(\"    {0} nejdelší palindromický uzávěr : {1}\".format(seq,seq[i:]))\n",
+    "    #print(\"    délka nejdelší palindromický uzávěr : {0}\".format(len(seq[i:])))\n",
+    "    closure = seq + seq[i-1::-1]\n",
+    "    return(closure)\n",
+    "\n",
+    "def makeEpalClosure (seq):\n",
+    "    \"udělá z řetězce pseudopalindromický uzávěr\"\n",
+    "    if isEpal(seq) == True:\n",
+    "        return(seq)\n",
+    "    i = 1\n",
+    "    while isEpal(seq[i:]) != True:\n",
+    "        i = i+1\n",
+    "    #print(\"    {0} nejdelší pseudopalindromický uzávěr : {1}\".format(seq,seq[i:]))\n",
+    "    closure = seq\n",
+    "    pref = seq[i-1::-1]\n",
+    "    for letter in pref:\n",
+    "        if letter == \"0\":\n",
+    "            closure = closure + \"1\"\n",
+    "        if letter == \"1\":\n",
+    "            closure = closure + \"0\"\n",
+    "    return(closure)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "def makeWord(delta, theta, steps, seed = \"\"):\n",
+    "    \"vytvoří slovo pomocí řídící posloupnosti a posloupnosti uzávěrů\"\n",
+    "    w = seed\n",
+    "    for step in range(0,steps):\n",
+    "        w = w + delta[step]\n",
+    "        if theta[step] == \"R\":\n",
+    "            w = makePalClosure(w)\n",
+    "        if theta[step] == \"E\":\n",
+    "            w = makeEpalClosure(w)\n",
+    "        #print(\"w{0} = {1}\".format(step+1,w))\n",
+    "    return(w)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "def makeS(word):\n",
+    "    \"udělá operaci S na slovo\"\n",
+    "    Sword = \"\"\n",
+    "    for i in range(0,len(word)-1):\n",
+    "        Sword += str((int(word[i]) + int(word[i+1])) %2)\n",
+    "    return Sword"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def isZps(word):\n",
+    "    '''kontroluje, jestli možné, aby slovo bylo získané zobec. pal. uzávěrem,\n",
+    "    pokud ano, vrací normalizovanou bidirektivní posloupnost''' \n",
+    "    l=1\n",
+    "    prefixes = []\n",
+    "    while l <= len(word):\n",
+    "        if isPal(word[:l]) or isEpal(word[:l]):\n",
+    "            prefixes.append(word[:l])\n",
+    "        l=l+1\n",
+    "    #print(prefixes)\n",
+    "        \n",
+    "    iszps = True\n",
+    "    i=0\n",
+    "    newtheta= \"R\"\n",
+    "    newdelta= prefixes[0]\n",
+    "    while(i+1 < len(prefixes) and iszps == True):\n",
+    "        newletter = prefixes[i+1][len(prefixes[i])]\n",
+    "        palclo = makePalClosure(prefixes[i]+ newletter)\n",
+    "        epalclo = makeEpalClosure(prefixes[i]+ newletter)\n",
+    "\n",
+    "        if(palclo == prefixes[i+1]):\n",
+    "            newtheta = newtheta + \"R\"\n",
+    "            newdelta = newdelta + newletter\n",
+    "        elif(epalclo == prefixes[i+1]):\n",
+    "            newtheta = newtheta + \"E\"\n",
+    "            newdelta = newdelta + newletter\n",
+    "        else:\n",
+    "            iszps = False\n",
+    "        i = i+1\n",
+    "    return([iszps, newdelta, newtheta])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "def timing(f):\n",
+    "    def wrap(*args):\n",
+    "        time1 = time.time()\n",
+    "        ret = f(*args)\n",
+    "        time2 = time.time()\n",
+    "        print('%s function took %0.3f ms' % (f.__name__, (time2-time1)*1000.0))\n",
+    "        return(ret)\n",
+    "    return wrap"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "@timing\n",
+    "def testPrefixes(deltas, thetas, steps):\n",
+    "    '''Funkce, která všechny delty a thety otestuje, uděla prefixy, operaci S a pak vyzkouší,\n",
+    "    jestli získané slovo může být z zobec. pal. uz. '''\n",
+    "    printed = False\n",
+    "    for delta in deltas:\n",
+    "        \n",
+    "        for theta in thetas:\n",
+    "            word = makeWord(delta, theta, steps, \"00100100\")\n",
+    "            Sword = makeS(word)\n",
+    "            result = isZps(Sword)\n",
+    "            if result[0]==True:\n",
+    "                #print(Sword)\n",
+    "                if printed == False:\n",
+    "                    print(\"delta = \" + delta)\n",
+    "                    printed = True\n",
+    "                print(\"theta = {0} : {1} \".format(theta, result)) \n",
+    "        if printed == True:        \n",
+    "            print(\"\")\n",
+    "        printed = False"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.4.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
