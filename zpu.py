@@ -361,7 +361,7 @@ def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False,
 @timing
 def testGPW(deltas, thetas, steps, seed = "", normalized = False, 
                       closure = "RE", max_no_matters_closure_type = 0):
-    """Funkce, která všechny delty a thety otestuje, uděla prefixy, operaci S a pak vyzkouší,
+    """Funkce, která všechny delty a thety otestuje, uděla prefixy a pak vyzkouší,
     jestli získané slovo může být z zobec. pal. uz."""
     
     _testGPW(deltas, thetas, steps, seed, normalized, closure, max_no_matters_closure_type)
