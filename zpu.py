@@ -259,7 +259,7 @@ def Normalize(delta, theta):
 
 # In[12]:
 
-def isNormalized(delta, theta, verbose = "False"):
+def isNormalized(delta, theta, verbose = False):
     biseq = makeBiseq(delta, theta)
     if biseq.startswith("0R1R") or biseq.startswith("1R0R"):
         if verbose:
@@ -329,6 +329,7 @@ def _testGPW(deltas, thetas, steps, seed = "", normalized = False,
     """Funkce, která všechny delty a thety otestuje, uděla prefixy, (případně další operaci) a pak vyzkouší,
     jestli získané slovo může být z zobec. pal. uz."""
     
+    number_of_true = 0
     printed = False
     for delta in deltas:
         for theta in thetas:
@@ -342,7 +343,8 @@ def _testGPW(deltas, thetas, steps, seed = "", normalized = False,
                     #print("Slovo u:" + word)
                     #print(additional_operation + "(u):" + testedword)
                     print("delta = {0}, theta = {1} : {2} ".format(delta, theta, result))
-        print("")
+                    number_of_true += 1
+    print("počet biposloupností:" + str(number_of_true))
 
 
 # In[16]:
@@ -361,7 +363,7 @@ def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False,
 @timing
 def testGPW(deltas, thetas, steps, seed = "", normalized = False, 
                       closure = "RE", max_no_matters_closure_type = 0):
-    """Funkce, která všechny delty a thety otestuje, uděla prefixy a pak vyzkouší,
+    """Funkce, která všechny delty a thety otestuje, uděla prefixy, operaci S a pak vyzkouší,
     jestli získané slovo může být z zobec. pal. uz."""
     
     _testGPW(deltas, thetas, steps, seed, normalized, closure, max_no_matters_closure_type)
