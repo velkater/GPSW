@@ -293,7 +293,7 @@ def rreplace(s, old, new, occurrence):
 def maximizeRinBiseq(delta, theta):
     delta, theta = Normalize(delta, theta)
     biseq = makeBiseq(delta, theta)
-    print(biseq)
+    #print(biseq)
     badfact = ["0E0R1E0R", "0E1R0E1R", "1E0R1E0R", "1E1R0E1R" ]
     replacement = ["0E0R1R", "0E1R0R", "1E0R1R", "1E1R0R" ]
     l = len(biseq)
@@ -308,13 +308,13 @@ def maximizeRinBiseq(delta, theta):
                 i = i-1
             else:
                 bad = badfact[j]
-                print(parseBiseq(bad))
+                #print(parseBiseq(bad))
                 biseq = rreplace(biseq, substring, replacement[j],1)
-                print(parseBiseq(biseq))
+                #print(parseBiseq(biseq))
                 i = i-2
-    if biseq.startswith("1R0E1R"):
+    if biseq.startswith("0R1E0R"):
         biseq = biseq.replace("0R1E0R", "0R1R", 1)
-    elif biseq.startswith("1R0R"):
+    elif biseq.startswith("1R0E1R"):
         biseq = biseq.replace("1R0E1R", "1R0R", 1)
         
     return parseBiseq(biseq)
