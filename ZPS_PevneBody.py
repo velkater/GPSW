@@ -1,12 +1,25 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 import itertools
 import zpu as zpu
 import re
 import sys
+import time
+
+
+# In[2]:
+
+def timing(f):
+    def wrap(*args):
+        time1 = time.time()
+        ret = f(*args)
+        time2 = time.time()
+        print('%s function took %0.3f ms' % (f.__name__, (time2-time1)*1000.0))
+        return(ret)
+    return wrap
 
 
 # In[3]:
@@ -20,38 +33,45 @@ def subs(dic, n):
     return s[:n]
 
 
-# In[4]:
+# In[37]:
 
-cpattern = re.compile("^R+$")
-dpattern = re.compile("^(01)+$")
+cpattern = re.compile("^R+$") # sama R
+dpattern = re.compile("^(01)+$") # slovo 0101010101
+epattern = re.compile("((0R){20})|((0E){20})|((1R){20})|((1E){20})$")
+fpattern = re.compile("((((0R)+1E){10})|(((0E)+1R){10})|(((1E)+0R){10})|((((1E)+0R){10})))$")
 
 
-# In[9]:
+# In[85]:
 
 from multiprocessing import Pool
-pool = Pool(processes=2)
+l = 300
 
-def blaaa(rule):
+def testwords(rule):
     dicti = {"0": rule[0], "1": rule[1]}
-    word = subs(dicti, 300)
-    ret = zpu.isZps(word)
+    word = subs(dicti, l)
+    ret = zpu.isZps2(word)
     if (ret[0]==True):
         bis = [ret[1], ret[2]]
-        if not (re.match(cpattern, bis[1])) and         not (re.match(dpattern, word)):
-            pass
-            print(str(dicti) + str(ret[0]) + " slovo: " + word[:50])
-            print(bis)
-            print("")
+        bis_c = zpu.makeBiseq(ret[1], ret[2])
+        bisR = zpu.maximizeRinBiseq(ret[1], ret[2])
+        if not (re.match(cpattern, bisR[1])) and         not (re.match(dpattern, word))and         not (re.search(epattern, bis_c)) and not (re.match(fpattern, bis_c)):
+            return  str(dicti) + " "+ " slovo: " + word[:40] + " " + str(bis)
 
-if __name__ == '__main__':
-    print("JAO")
-    for rep1 in range(1,3):
-        for rep2 in range(1,4):
+@timing
+def getresults(lphi0, lphi1):
+    pool = Pool(processes=4)
+    results = []
+    for rep1 in range(1,lphi0):
+        for rep2 in range(1,lphi1+1):
             phi0 = ['0'+ ''.join(i) for i in itertools.product('01', repeat=rep1)]
             phi1 = [''.join(j) for j in itertools.product('01', repeat=rep2)]
             cart = [ k for k in itertools.product(phi0, phi1)]
-            n = 300
-            print(list(pool.map(blaaa, cart)))
-            print("asdasd")
+            r = pool.map_async(testwords, cart)
+            results.append(list(filter(lambda x: x != None, r.get())))
+    return results
 
+results = getresults(14, 14)
 
+for result in results:
+    for words in result:
+        print(words)

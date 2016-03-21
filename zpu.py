@@ -13,8 +13,14 @@ import re
 
 # In[2]:
 
+verbose = 0
+verboseprint = lambda x,y: print(y) if verbose >= x else None
+
+
+# In[3]:
+
 def isPal(seq):
-    "kontroluje jestli řetězec je palindrom"
+    '''kontroluje jestli řetězec je palindrom'''
     l = len(seq)
     if l == 1:
         return(True)
@@ -24,7 +30,7 @@ def isPal(seq):
     return(True)
 
 def isEpal(seq):
-    "kontroluje jestli řetězec je pseudopalindrom"
+    '''kontroluje jestli řetězec je pseudopalindrom'''
     l = len(seq)
     if l%2 == 1:
         return(False)
@@ -34,17 +40,17 @@ def isEpal(seq):
     return(True)
 
 
-# In[3]:
+# In[4]:
 
 def makePalClosure (seq):
-    "udělá z řetězce palindromický uzávěr"
+    '''udělá z řetězce palindromický uzávěr'''
     if isPal(seq) == True:
         return(seq)
     i = 1
     while isPal(seq[i:]) != True:
         i = i+1
-    #print("    {0} nejdelší palindromický uzávěr : {1}".format(seq,seq[i:]))
-    #print("    délka nejdelší palindromický uzávěr : {0}".format(len(seq[i:])))
+    verboseprint(2, "    {0} nejdelší palindromický uzávěr : {1}".format(seq,seq[i:]))
+    verboseprint(2, "    délka nejdelší palindromický uzávěr : {0}".format(len(seq[i:])))
     closure = seq + seq[i-1::-1]
     return(closure)
 
@@ -55,7 +61,7 @@ def makeEpalClosure (seq):
     i = 1
     while isEpal(seq[i:]) != True:
         i = i+1
-    #print("    {0} nejdelší pseudopalindromický uzávěr : {1}".format(seq,seq[i:]))
+    verboseprint(2, "    {0} nejdelší E- palindromický uzávěr : {1}".format(seq,seq[i:]))
     closure = seq
     pref = seq[i-1::-1]
     for letter in pref:
@@ -66,7 +72,7 @@ def makeEpalClosure (seq):
     return(closure)
 
 
-# In[4]:
+# In[5]:
 
 def makeWord(delta, theta, steps, seed = ""):
     "vytvoří slovo pomocí řídící posloupnosti a posloupnosti uzávěrů"
@@ -75,13 +81,16 @@ def makeWord(delta, theta, steps, seed = ""):
         w = w + delta[step]
         if theta[step] == "R":
             w = makePalClosure(w)
-        if theta[step] == "E":
+        elif theta[step] == "E":
             w = makeEpalClosure(w)
-        #print("w{0} = {1}".format(step+1,w))
+        else:
+            print("wrong symbol")
+            break
+        verboseprint(2, "w{0} = {1}".format(step+1,w))
     return(w)
 
 
-# In[5]:
+# In[6]:
 
 def makeS(word):
     "udělá operaci S na slovo"
@@ -91,7 +100,7 @@ def makeS(word):
     return Sword
 
 
-# In[6]:
+# In[7]:
 
 def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
     '''kontroluje, jestli možné, aby slovo bylo získané zobec. pal. uzávěrem,
@@ -103,10 +112,10 @@ def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
         if ((l<=maximum or closure != "E") and isPal(word[:l])) or         ((l<=maximum or closure != "R") and isEpal(word[:l])):
             prefixes.append(word[:l])
         l=l+1
-    #print(prefixes)
+    verboseprint(1, prefixes)
     
     if not prefixes:
-        #print("No prefixes of type " + str(closure) + " were found")
+        verboseprint(1, "No prefixes of type " + str(closure) + " were found")
         return([False])
     if (len(prefixes[0]) > 2) or (len(prefixes[-1]) < len(word)//2) :
         return([False])        
@@ -141,7 +150,73 @@ def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
     return([iszps, newdelta, newtheta])
 
 
-# In[7]:
+# In[20]:
+
+def rindex(mylist, myvalue):
+    return len(mylist) - mylist[::-1].index(myvalue) - 1
+def isZps2(word, closure = "ER", max_no_matters_closure_type = 0):
+    '''kontroluje, jestli možné, aby slovo bylo získané zobec. pal. uzávěrem,
+    pokud ano, vrací normalizovanou bidirektivní posloupnost''' 
+    maximum = max_no_matters_closure_type
+    length = len(word)
+    l=1
+    prefixes = [["R", word[0]],["E", word[0]]]
+    lengths = [0, 0]
+    iszps = True
+    newT = ""
+    
+    while l <= len(word) and iszps == True:
+        
+        while l <= len(word):
+            if ((l<=maximum or closure != "E") and isPal(word[:l])):
+                newT = "R"
+                break
+            elif ((l<=maximum or closure != "R") and isEpal(word[:l])):
+                newT = "E"
+                break
+            l = l+1
+        if l < length:
+            prefixes.append([newT, word[l]])
+            lengths.append(l)
+        elif l == length:
+            prefixes.append([newT, None])
+            lengths.append(l)
+        l = l + 1
+        
+        if not prefixes:
+            verboseprint(1, "No prefixes of type " + str(closure) + " were found")
+            return([False])
+        if (len(prefixes[0][1]) > 2):
+            return([False])
+                
+        new_wk = prefixes[-1]
+        wk = prefixes[-2]
+        goodlpps = [new_wk[0], wk[1] if new_wk[0]==wk[0] else str((int(wk[1])+1)%2)]
+        verboseprint(1, "{0} {1}".format(goodlpps, goodlpps in prefixes[:-2]))
+        if (goodlpps in prefixes[:-2]):
+            llps = lengths[rindex(prefixes[:-2],goodlpps)]
+            if 2*lengths[-2] - llps != lengths[-1]:
+                iszps = False
+        elif (new_wk[0] == "R") and (2*lengths[-2] + 1 == lengths[-1]):
+            pass
+        elif (new_wk[0] == "E") and (2*lengths[-2] + 2 == lengths[-1]):
+            pass
+        else:
+            iszps = False
+                
+    if ((lengths[-1]+2) < length//2):
+        return([False])
+        
+    
+    newdelta = word[0]
+    newtheta = ""
+    llist = list(zip(*prefixes))
+    newtheta = newtheta + ''.join(llist[0][2:])
+    newdelta = newdelta + ''.join(llist[1][2:-1])
+    return([iszps, newdelta, newtheta])
+
+
+# In[21]:
 
 def timing(f):
     def wrap(*args):
@@ -155,13 +230,13 @@ def timing(f):
 
 # ## Normalizace a bi-posloupnosti
 
-# In[8]:
+# In[9]:
 
 bad_prefixes = ["(0R)*0E", "(1R)*1E", "(0R)+1E1E", "(1R)+0E0E"]
 bad_factors = ["1R0E1E", "1R1E0E", "0R0E1E", "0R1E0E", "1E0R1R", "1E1R0R", "0E0R1R", "0E1R0R"]
 
 
-# In[9]:
+# In[10]:
 
 def makeBiseq(delta, theta):
     """Makes one sequence from the bi-sequence delta andm theta"""
@@ -184,7 +259,7 @@ def parseBiseq(biseq):
     return [delta, theta]
 
 
-# In[10]:
+# In[11]:
 
 def repare_ii(match, a):
     a_bar = ["1", "0"]
@@ -219,7 +294,7 @@ def rep_3(match):
 norm_replace_functions = [rep_0, rep_1, rep_2, rep_3]
 
 
-# In[11]:
+# In[12]:
 
 def Normalize(delta, theta):
     biseq = makeBiseq(delta, theta)
@@ -257,9 +332,9 @@ def Normalize(delta, theta):
     return parseBiseq(biseq)
 
 
-# In[12]:
+# In[13]:
 
-def isNormalized(delta, theta, verbose = False):
+def isNormalized(delta, theta, verbose = "False"):
     biseq = makeBiseq(delta, theta)
     if biseq.startswith("0R1R") or biseq.startswith("1R0R"):
         if verbose:
@@ -281,14 +356,14 @@ def isNormalized(delta, theta, verbose = False):
         return True
 
 
-# In[13]:
+# In[14]:
 
 def rreplace(s, old, new, occurrence):
     li = s.rsplit(old, occurrence)
     return new.join(li)
 
 
-# In[14]:
+# In[4]:
 
 def maximizeRinBiseq(delta, theta):
     delta, theta = Normalize(delta, theta)
@@ -322,7 +397,7 @@ def maximizeRinBiseq(delta, theta):
 
 # ## Testování
 
-# In[15]:
+# In[16]:
 
 def _testGPW(deltas, thetas, steps, seed = "", normalized = False, 
                       closure = "RE", max_no_matters_closure_type = 0, additional_operation = ""):
@@ -347,7 +422,7 @@ def _testGPW(deltas, thetas, steps, seed = "", normalized = False,
     print("počet biposloupností:" + str(number_of_true))
 
 
-# In[16]:
+# In[17]:
 
 @timing
 def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False, 
@@ -358,12 +433,12 @@ def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False,
     _testGPW(deltas, thetas, steps, seed, normalized, closure, max_no_matters_closure_type, "S")
 
 
-# In[17]:
+# In[18]:
 
 @timing
 def testGPW(deltas, thetas, steps, seed = "", normalized = False, 
                       closure = "RE", max_no_matters_closure_type = 0):
-    """Funkce, která všechny delty a thety otestuje, uděla prefixy, operaci S a pak vyzkouší,
+    """Funkce, která všechny delty a thety otestuje, uděla prefixy a pak vyzkouší,
     jestli získané slovo může být z zobec. pal. uz."""
     
     _testGPW(deltas, thetas, steps, seed, normalized, closure, max_no_matters_closure_type)
