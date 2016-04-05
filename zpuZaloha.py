@@ -10,7 +10,6 @@
 import time
 import re
 
-
 # In[2]:
 
 verbose = 0
@@ -150,7 +149,7 @@ def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
     return([iszps, newdelta, newtheta])
 
 
-# In[8]:
+# In[20]:
 
 def rindex(mylist, myvalue):
     return len(mylist) - mylist[::-1].index(myvalue) - 1
@@ -216,7 +215,7 @@ def isZps2(word, closure = "ER", max_no_matters_closure_type = 0):
     return([iszps, newdelta, newtheta])
 
 
-# In[9]:
+# In[21]:
 
 def timing(f):
     def wrap(*args):
@@ -230,13 +229,13 @@ def timing(f):
 
 # ## Normalizace a bi-posloupnosti
 
-# In[10]:
+# In[9]:
 
 bad_prefixes = ["(0R)*0E", "(1R)*1E", "(0R)+1E1E", "(1R)+0E0E"]
 bad_factors = ["1R0E1E", "1R1E0E", "0R0E1E", "0R1E0E", "1E0R1R", "1E1R0R", "0E0R1R", "0E1R0R"]
 
 
-# In[11]:
+# In[10]:
 
 def makeBiseq(delta, theta):
     """Makes one sequence from the bi-sequence delta andm theta"""
@@ -259,7 +258,7 @@ def parseBiseq(biseq):
     return [delta, theta]
 
 
-# In[12]:
+# In[11]:
 
 def repare_ii(match, a):
     a_bar = ["1", "0"]
@@ -294,7 +293,7 @@ def rep_3(match):
 norm_replace_functions = [rep_0, rep_1, rep_2, rep_3]
 
 
-# In[13]:
+# In[12]:
 
 def Normalize(delta, theta):
     biseq = makeBiseq(delta, theta)
@@ -332,7 +331,7 @@ def Normalize(delta, theta):
     return parseBiseq(biseq)
 
 
-# In[14]:
+# In[13]:
 
 def isNormalized(delta, theta, verbose = "False"):
     biseq = makeBiseq(delta, theta)
@@ -356,14 +355,14 @@ def isNormalized(delta, theta, verbose = "False"):
         return True
 
 
-# In[15]:
+# In[14]:
 
 def rreplace(s, old, new, occurrence):
     li = s.rsplit(old, occurrence)
     return new.join(li)
 
 
-# In[16]:
+# In[4]:
 
 def maximizeRinBiseq(delta, theta):
     delta, theta = Normalize(delta, theta)
@@ -397,7 +396,7 @@ def maximizeRinBiseq(delta, theta):
 
 # ## Testování
 
-# In[17]:
+# In[16]:
 
 def _testGPW(deltas, thetas, steps, seed = "", normalized = False, 
                       closure = "RE", max_no_matters_closure_type = 0, additional_operation = ""):
@@ -422,7 +421,7 @@ def _testGPW(deltas, thetas, steps, seed = "", normalized = False,
     print("počet biposloupností:" + str(number_of_true))
 
 
-# In[18]:
+# In[17]:
 
 @timing
 def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False, 
@@ -433,7 +432,7 @@ def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False,
     _testGPW(deltas, thetas, steps, seed, normalized, closure, max_no_matters_closure_type, "S")
 
 
-# In[19]:
+# In[18]:
 
 @timing
 def testGPW(deltas, thetas, steps, seed = "", normalized = False, 
@@ -442,9 +441,4 @@ def testGPW(deltas, thetas, steps, seed = "", normalized = False,
     jestli získané slovo může být z zobec. pal. uz."""
     
     _testGPW(deltas, thetas, steps, seed, normalized, closure, max_no_matters_closure_type)
-
-
-# In[ ]:
-
-
 
