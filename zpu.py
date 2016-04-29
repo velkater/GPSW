@@ -1,9 +1,9 @@
 
 # coding: utf-8
 
-# # Zobecněný pseudopalindromický uzávěr
+# # Generalized pseudopalindromic closure
 
-# ## Funkce pro vytvoření zobecněného pseudopalindromického uzávěru
+# ## Functions for generalized pseudostandard (GPS) words on binary alphabet
 
 # In[1]:
 
@@ -17,10 +17,10 @@ verbose = 0
 verboseprint = lambda x,y: print(y) if verbose >= x else None
 
 
-# In[3]:
+# In[22]:
 
 def isPal(seq):
-    '''kontroluje jestli řetězec je palindrom'''
+    """Checks if a string is a palindrome."""
     l = len(seq)
     if l == 1:
         return(True)
@@ -30,7 +30,7 @@ def isPal(seq):
     return(True)
 
 def isEpal(seq):
-    '''kontroluje jestli řetězec je pseudopalindrom'''
+    """Checks if a string is a E-palindrome."""
     l = len(seq)
     if l%2 == 1:
         return(False)
@@ -40,28 +40,30 @@ def isEpal(seq):
     return(True)
 
 
-# In[4]:
+# In[45]:
 
 def makePalClosure (seq):
-    '''udělá z řetězce palindromický uzávěr'''
+    """Makes palindromic closure from a string."""
     if isPal(seq) == True:
         return(seq)
     i = 1
     while isPal(seq[i:]) != True:
         i = i+1
-    verboseprint(2, "    {0} nejdelší palindromický uzávěr : {1}".format(seq,seq[i:]))
-    verboseprint(2, "    délka nejdelší palindromický uzávěr : {0}".format(len(seq[i:])))
+    verboseprint(2, 
+                 "{0} longest palindromic\
+                 closure: {1}".format(seq,seq[i:]))
     closure = seq + seq[i-1::-1]
     return(closure)
 
 def makeEpalClosure (seq):
-    "udělá z řetězce pseudopalindromický uzávěr"
+    """Makes E-palindromic closure from a string."""
     if isEpal(seq) == True:
         return(seq)
     i = 1
     while isEpal(seq[i:]) != True:
         i = i+1
-    verboseprint(2, "    {0} nejdelší E- palindromický uzávěr : {1}".format(seq,seq[i:]))
+    verboseprint(2, "{0} longest E-palindromic\
+                 closure: {1}".format(seq,seq[i:]))
     closure = seq
     pref = seq[i-1::-1]
     for letter in pref:
@@ -72,10 +74,11 @@ def makeEpalClosure (seq):
     return(closure)
 
 
-# In[5]:
+# In[24]:
 
 def makeWord(delta, theta, steps, seed = ""):
-    "vytvoří slovo pomocí řídící posloupnosti a posloupnosti uzávěrů"
+    """Makes a GPS word from the directive bi-sequence (delta, theta), 
+    optionally with some seed."""
     w = seed
     for step in range(0,steps):
         w = w + delta[step]
@@ -90,22 +93,22 @@ def makeWord(delta, theta, steps, seed = ""):
     return(w)
 
 
-# In[6]:
+# In[25]:
 
 def makeS(word):
-    "udělá operaci S na slovo"
+    """Returns the result of the operation S on some word."""
     Sword = ""
     for i in range(0,len(word)-1):
         Sword += str((int(word[i]) + int(word[i+1])) %2)
     return Sword
 
 
-# In[7]:
+# In[51]:
 
-def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
-    '''kontroluje, jestli možné, aby slovo bylo získané zobec. pal. uzávěrem,
-    pokud ano, vrací normalizovanou bidirektivní posloupnost''' 
-    maximum = max_no_matters_closure_type
+def isZpsNaive(word, closure = "ER", max_no_matters_closure_type = 0):
+    """Checks if some word can be a GPS word and if so, returns the 
+    beginning of its normalized directive bi-sequence."""
+    maximum = max_no_matters_closure_type #
     l=1
     prefixes = []
     while l <= len(word):
@@ -115,7 +118,7 @@ def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
     verboseprint(1, prefixes)
     
     if not prefixes:
-        verboseprint(1, "No prefixes of type " + str(closure) + " were found")
+        verboseprint(1, "No prefixes of type " + str(closure))
         return([False])
     if (len(prefixes[0]) > 2) or (len(prefixes[-1]) < len(word)//2) :
         return([False])        
@@ -150,13 +153,15 @@ def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
     return([iszps, newdelta, newtheta])
 
 
-# In[8]:
+# In[50]:
 
-def rindex(mylist, myvalue):
-    return len(mylist) - mylist[::-1].index(myvalue) - 1
-def isZps2(word, closure = "ER", max_no_matters_closure_type = 0):
-    '''kontroluje, jestli možné, aby slovo bylo získané zobec. pal. uzávěrem,
-    pokud ano, vrací normalizovanou bidirektivní posloupnost''' 
+def rindex(mylist, myelement):
+    '''Returns the last index of some element in a list'''
+    return len(mylist) - mylist[::-1].index(myelement) - 1
+def isZps(word, closure = "ER", max_no_matters_closure_type = 0):
+    '''Checks if some word can be a GPS word and if so, returns the 
+    beginning of its normalized directive bi-sequence, 
+    using the generalization of Justin's formula.''' 
     maximum = max_no_matters_closure_type
     length = len(word)
     l=1
@@ -184,15 +189,17 @@ def isZps2(word, closure = "ER", max_no_matters_closure_type = 0):
         l = l + 1
         
         if not prefixes:
-            verboseprint(1, "No prefixes of type " + str(closure) + " were found")
+            verboseprint(1, "No prefixes of type " + str(closure))
             return([False])
         if (len(prefixes[0][1]) > 2):
             return([False])
                 
         new_wk = prefixes[-1]
         wk = prefixes[-2]
-        goodlpps = [new_wk[0], wk[1] if new_wk[0]==wk[0] else str((int(wk[1])+1)%2)]
-        verboseprint(1, "{0} {1}".format(goodlpps, goodlpps in prefixes[:-2]))
+        goodlpps = [new_wk[0], wk[1] if new_wk[0]==wk[0] 
+                    else str((int(wk[1])+1)%2)]
+        verboseprint(1, "{0} {1}".format(goodlpps, 
+                                         goodlpps in prefixes[:-2]))
         if (goodlpps in prefixes[:-2]):
             llps = lengths[rindex(prefixes[:-2],goodlpps)]
             if 2*lengths[-2] - llps != lengths[-1]:
@@ -216,39 +223,42 @@ def isZps2(word, closure = "ER", max_no_matters_closure_type = 0):
     return([iszps, newdelta, newtheta])
 
 
-# In[9]:
+# In[27]:
 
 def timing(f):
+    """A decorator function timing a functions."""
     def wrap(*args):
         time1 = time.time()
         ret = f(*args)
         time2 = time.time()
-        print('%s function took %0.3f ms' % (f.__name__, (time2-time1)*1000.0))
+        print('%s function took %0.3f ms' % (f.__name__, 
+                                             (time2-time1)*1000.0))
         return(ret)
     return wrap
 
 
-# ## Normalizace a bi-posloupnosti
+# ## Normalized form and directive bi-sequence
 
 # In[10]:
 
 bad_prefixes = ["(0R)*0E", "(1R)*1E", "(0R)+1E1E", "(1R)+0E0E"]
-bad_factors = ["1R0E1E", "1R1E0E", "0R0E1E", "0R1E0E", "1E0R1R", "1E1R0R", "0E0R1R", "0E1R0R"]
+bad_factors = ["1R0E1E", "1R1E0E", "0R0E1E", "0R1E0E", "1E0R1R", 
+               "1E1R0R", "0E0R1R", "0E1R0R"]
 
 
-# In[11]:
+# In[28]:
 
 def makeBiseq(delta, theta):
-    """Makes one sequence from the bi-sequence delta andm theta"""
+    """Makes one sequence from the bi-sequence delta andm theta."""
     if len(delta) != len(theta):
-            print("délky delta a theta nejsou stejné")
+            print("lengths of delta and theta are not equal.")
             return 
     s = ""
     for i in range(len(delta)):
         s = s + delta[i] + theta[i]
     return s
 def parseBiseq(biseq):
-    """Makes from one sequence the bi-sequence delta and theta"""
+    """Makes the bi-sequence delta and theta from one sequence."""
     delta = ""
     theta = ""
     for i in range(len(biseq)):
@@ -259,9 +269,10 @@ def parseBiseq(biseq):
     return [delta, theta]
 
 
-# In[12]:
+# In[52]:
 
 def repare_ii(match, a):
+    """Replaces the prefix (R^{i-1}E, a^i) by (R^iE, a^ia*)."""
     a_bar = ["1", "0"]
     length = match.end()
     s = match.string
@@ -271,6 +282,7 @@ def repare_ii(match, a):
     return s
     
 def repare_iii(match, a):
+    """Replaces the prefix (R^{i}EE, a^ia*a*) by (R^iERE, a^ia*a*a)."""
     a_bar = ["1", "0"]
     length = match.end()
     s = match.string
@@ -294,9 +306,11 @@ def rep_3(match):
 norm_replace_functions = [rep_0, rep_1, rep_2, rep_3]
 
 
-# In[13]:
+# In[53]:
 
 def Normalize(delta, theta):
+    """Returns the normalized directive bi-sequence giving the same GPS word
+    as (delta, theta)"""
     biseq = makeBiseq(delta, theta)
     if biseq.startswith("0R1R"):
         biseq = biseq.replace("0R1R", "0R1E0R", 1)
@@ -305,15 +319,11 @@ def Normalize(delta, theta):
     else:
         i = 0
         matched = re.match(bad_prefixes[i], biseq)
-        #print(matched)
         while (i<4) and (matched == None):
             i = i+1
             if i<4:
-                matched = re.match(bad_prefixes[i], biseq)
-                #print(matched)
-            
+                matched = re.match(bad_prefixes[i], biseq)          
         if i < 4:
-            #print("pattern: " + str(i))
             biseq = norm_replace_functions[i](matched)
     
     i=0
@@ -325,50 +335,47 @@ def Normalize(delta, theta):
             i = i+1
         else:
             bad = bad_factors[j]
-            #print(parseBiseq(bad))
             biseq = biseq.replace(bad, bad[0:5] + bad[1] + bad[2:4], 1)
-            #print(parseBiseq(biseq))
             i = max(0, i+2)
     return parseBiseq(biseq)
 
 
-# In[14]:
+# In[60]:
 
-def isNormalized(delta, theta, verbose = "False"):
+def isNormalized(delta, theta):
+    """Checks directive bi-sequence is normalized."""
     biseq = makeBiseq(delta, theta)
     if biseq.startswith("0R1R") or biseq.startswith("1R0R"):
-        if verbose:
-            print("je tam RR aa*")
+        verboseprint(2, "contains the factor (RR, aa*)")
         return False
-    elif (re.match(bad_prefixes[0], biseq) != None) or (re.match(bad_prefixes[1], biseq) != None):
-        if verbose:
-            print("je tam R^iE a^i")
+    elif (re.match(bad_prefixes[0], biseq) != None) or     (re.match(bad_prefixes[1], biseq) != None):
+        verboseprint(2, "contains the factor (R^iE, a^i)")
         return False
-    elif (re.match(bad_prefixes[2], biseq) != None) or (re.match(bad_prefixes[3], biseq) != None):
-        if verbose:
-            print("je tam R^iEE a^ia*a*")
+    elif (re.match(bad_prefixes[2], biseq) != None) or     (re.match(bad_prefixes[3], biseq) != None):
+        verboseprint(2, "contains the factor (R^iEE, a^ia*a*)")
         return False
     elif any(x in biseq for x in bad_factors):
-        if verbose:
-            print("ve slove je tt*t* abb*")
+        verboseprint(2, "contains the factor (tt*t*, abb*)")
         return False
     else:
         return True
 
 
-# In[15]:
+# In[61]:
 
 def rreplace(s, old, new, occurrence):
+    """Replaces the last occurence of a factor in a string by a new one."""
     li = s.rsplit(old, occurrence)
     return new.join(li)
 
 
-# In[16]:
+# In[59]:
 
 def maximizeRinBiseq(delta, theta):
+    """Maximizes the occurrences of the antimorphism R in a directive 
+    bi-sequence (doing "backwards" normalization when possible)"""
     delta, theta = Normalize(delta, theta)
     biseq = makeBiseq(delta, theta)
-    #print(biseq)
     badfact = ["0E0R1E0R", "0E1R0E1R", "1E0R1E0R", "1E1R0E1R" ]
     replacement = ["0E0R1R", "0E1R0R", "1E0R1R", "1E1R0R" ]
     l = len(biseq)
@@ -383,15 +390,12 @@ def maximizeRinBiseq(delta, theta):
                 i = i-1
             else:
                 bad = badfact[j]
-                #print(parseBiseq(bad))
                 biseq = rreplace(biseq, substring, replacement[j],1)
-                #print(parseBiseq(biseq))
                 i = i-2
     if biseq.startswith("0R1E0R"):
         biseq = biseq.replace("0R1E0R", "0R1R", 1)
     elif biseq.startswith("1R0E1R"):
-        biseq = biseq.replace("1R0E1R", "1R0R", 1)
-        
+        biseq = biseq.replace("1R0E1R", "1R0R", 1)     
     return parseBiseq(biseq)
 
 
