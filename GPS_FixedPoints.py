@@ -3,10 +3,12 @@
 
 # # GPS words and fixed points of morphisms
 
-# In[40]:
+# In[10]:
 
 import re
 import zpu
+import time
+import itertools
 def writetofile(text):
     with open("out.txt", "a") as ofile:
         ofile.write(str(text) + "\n")
@@ -23,7 +25,7 @@ def timing(f):
 
 # ## Substitution
 
-# In[16]:
+# In[11]:
 
 def subs(dic, n):
     s = dic["0"]
@@ -36,24 +38,25 @@ def subs(dic, n):
 
 # ## Patterns we want to avoid in the bi-sequence
 
-# In[17]:
+# In[12]:
 
 cpattern = re.compile("^R+$") # sama R
 dpattern = re.compile("^(01)+$") # slovo 0101010101
 epattern = re.compile("((0R){20})|((0E){20})|((1R){20})|((1E){20})$")
-fpattern = re.compile("((((0R)+1E){10})|(((0E)+1R){10})|(((1R)+0E){10})|(((1E)+0R){10}))$")
+fpattern = re.compile(
+    "((((0R)+1E){10})|(((0E)+1R){10})|(((1R)+0E){10})|(((1E)+0R){10}))$")
 
 
 # ## Testing functions
 
-# In[41]:
+# In[15]:
 
 from multiprocessing import Pool
 l = 300
 def testword(rule, file = None):
     dicti = {"0": rule[0], "1": rule[1]}
     word = subs(dicti, l)
-    ret = zpu.isZps2(word)
+    ret = zpu.isZps(word)
     if (ret[0]==True):
         bis = [ret[1], ret[2]]
         bis_c = zpu.makeBiseq(ret[1], ret[2])
@@ -84,11 +87,16 @@ def getresults(lphi0, lphi1, file = None):
 
 # ## Results
 
-# In[42]:
+# In[16]:
 
 results = getresults(5,5)
-#for result in results:
-    #print(result)
+for result in results:
+    print(result)
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:

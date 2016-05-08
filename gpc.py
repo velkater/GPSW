@@ -105,7 +105,7 @@ def makeS(word):
     return Sword
 
 
-# In[1]:
+# In[26]:
 
 def isGPSNaive(word, closure="ER", max_no_matters_closure_type=0):
     """Checks if some word can be a GPS word and if so, returns the 
@@ -124,7 +124,7 @@ def isGPSNaive(word, closure="ER", max_no_matters_closure_type=0):
     if not prefixes:
         verboseprint(1, "No prefixes of type " + str(closure))
         return([False])
-    if (len(prefixes[0]) > 2) or (len(prefixes[-1]) < len(word) // 2):
+    if (len(prefixes[0]) > 2) or (((len(prefixes[-1])+1)*2) < len(word)):
         return([False])
 
     # Preparing (\Delta, \Theta)
@@ -160,7 +160,7 @@ def isGPSNaive(word, closure="ER", max_no_matters_closure_type=0):
     return([iszps, newdelta, newtheta])
 
 
-# In[11]:
+# In[25]:
 
 def rindex(mylist, myelement):
     '''Returns the last index of some element in a list'''
@@ -232,7 +232,7 @@ def isGPS(word, closure="ER", max_no_matters_closure_type=0):
             iszps = False
 
     # Trivial condition
-    if ((lengths[-1] + 2) < length // 2):
+    if ((lengths[-1]+1) * 2 < length):
         return([False])
 
     # Adding the new symbol to \Delta and \Theta
@@ -244,7 +244,7 @@ def isGPS(word, closure="ER", max_no_matters_closure_type=0):
     return([iszps, newdelta, newtheta])
 
 
-# In[7]:
+# In[13]:
 
 def timing(f):
     """A decorator function timing a functions."""
@@ -260,14 +260,14 @@ def timing(f):
 
 # ## Normalized form and directive bi-sequence
 
-# In[8]:
+# In[14]:
 
 bad_prefixes = ["(0R)*0E", "(1R)*1E", "(0R)+1E1E", "(1R)+0E0E"]
 bad_factors = ["1R0E1E", "1R1E0E", "0R0E1E", "0R1E0E", "1E0R1R",
                "1E1R0R", "0E0R1R", "0E1R0R"]
 
 
-# In[9]:
+# In[15]:
 
 def makeBiseq(delta, theta):
     """Makes one sequence from the bi-sequence delta andm theta."""
@@ -292,7 +292,7 @@ def parseBiseq(biseq):
     return [delta, theta]
 
 
-# In[10]:
+# In[16]:
 
 def repare_ii(match, a):
     """Replaces the prefix (R^{i-1}E, a^i) by (R^iE, a^ia*)."""
@@ -334,27 +334,21 @@ def rep_3(match):
 norm_replace_functions = [rep_0, rep_1, rep_2, rep_3]
 
 
-# In[4]:
+# In[31]:
 
-def Normalize(delta, theta):
+def normalize(delta, theta):
     """Returns the normalized directive bi-sequence giving the same GPS word
     as (delta, theta)"""
     biseq = makeBiseq(delta, theta)
     # Replacing forbidden prefixes
     if biseq.startswith("0R1R"):
         biseq = biseq.replace("0R1R", "0R1E0R", 1)
-    elif biseq.startswith("1R0R"):
+    if biseq.startswith("1R0R"):
         biseq = biseq.replace("1R0R", "1R0E1R", 1)
-    else:
-        # Finding other forbidden prefixes
-        i = 0
+    # Finding other forbidden prefixes
+    for i in range(4):
         matched = re.match(bad_prefixes[i], biseq)
-        while (i < 4) and (matched == None):
-            i = i + 1
-            if i < 4:
-                matched = re.match(bad_prefixes[i], biseq)
-        if i < 4:
-            # Replacing the forbidden prefixes
+        if matched != None:
             biseq = norm_replace_functions[i](matched)
 
     i = 0
@@ -372,7 +366,7 @@ def Normalize(delta, theta):
     return parseBiseq(biseq)
 
 
-# In[5]:
+# In[18]:
 
 def isNormalized(delta, theta):
     """Checks directive bi-sequence is normalized."""
@@ -393,7 +387,7 @@ def isNormalized(delta, theta):
         return True
 
 
-# In[6]:
+# In[19]:
 
 def rreplace(s, old, new, occurrence):
     """Replaces the last occurence of a factor in a string by a new one."""
@@ -401,12 +395,12 @@ def rreplace(s, old, new, occurrence):
     return new.join(li)
 
 
-# In[7]:
+# In[29]:
 
 def maximizeRinBiseq(delta, theta):
     """Maximizes the occurrences of the antimorphism R in a directive 
     bi-sequence (doing "backwards" normalization when possible)"""
-    delta, theta = Normalize(delta, theta)
+    delta, theta = normalize(delta, theta)
     biseq = makeBiseq(delta, theta)
     badfact = ["0E0R1E0R", "0E1R0E1R", "1E0R1E0R", "1E1R0E1R"]
     replacement = ["0E0R1R", "0E1R0R", "1E0R1R", "1E1R0R"]
