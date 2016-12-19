@@ -17,7 +17,7 @@ verbose = 0
 verboseprint = lambda x,y: print(y) if verbose >= x else None
 
 
-# In[1]:
+# In[3]:
 
 def isPal(seq):
     """Checks if a string is a palindrome."""
@@ -31,7 +31,7 @@ def isPal(seq):
 
 
 def isEpal(seq):
-    """Checks if a string is a E-palindrome."""
+    """Checks if a string is an E-palindrome."""
     l = len(seq)
     if l % 2 == 1:
         return(False)
@@ -41,7 +41,7 @@ def isEpal(seq):
     return(True)
 
 
-# In[16]:
+# In[4]:
 
 def makePalClosure(seq):
     """Makes palindromic closure from a string."""
@@ -76,7 +76,7 @@ def makeEpalClosure(seq):
     return(closure)
 
 
-# In[17]:
+# In[5]:
 
 def makeWord(delta, theta, steps, seed=""):
     """Makes a GPS word from the directive bi-sequence (delta, theta), 
@@ -95,7 +95,7 @@ def makeWord(delta, theta, steps, seed=""):
     return(w)
 
 
-# In[4]:
+# In[6]:
 
 def makeS(word):
     """Returns the result of the operation S on some word."""
@@ -105,7 +105,7 @@ def makeS(word):
     return Sword
 
 
-# In[26]:
+# In[7]:
 
 def isGPSNaive(word, closure="ER", max_no_matters_closure_type=0):
     """Checks if some word can be a GPS word and if so, returns the 
@@ -137,7 +137,7 @@ def isGPSNaive(word, closure="ER", max_no_matters_closure_type=0):
         newtheta = "E"
         newdelta = prefixes[0][0]
     
-    # Checking of prefixes can be obtained by permitted closures
+    # Checking of whether prefixes can be obtained by permitted closures
     while(i + 1 < len(prefixes) and iszps == True):
         newletter = prefixes[i + 1][len(prefixes[i])]
         condition_noE = (len(prefixes[i + 1]) <= maximum) or (closure != "E")
@@ -160,7 +160,7 @@ def isGPSNaive(word, closure="ER", max_no_matters_closure_type=0):
     return([iszps, newdelta, newtheta])
 
 
-# In[25]:
+# In[8]:
 
 def rindex(mylist, myelement):
     '''Returns the last index of some element in a list'''
@@ -170,7 +170,7 @@ def rindex(mylist, myelement):
 def isGPS(word, closure="ER", max_no_matters_closure_type=0):
     '''Checks if some word can be a GPS word and if so, returns the 
     beginning of its normalized directive bi-sequence, 
-    using the generalization of Justin's formula.'''
+    using the generalization of the Justin's formula.'''
     maximum = max_no_matters_closure_type
     length = len(word)
     l = 1
@@ -203,7 +203,7 @@ def isGPS(word, closure="ER", max_no_matters_closure_type=0):
             lengths.append(l)
         l = l + 1
         
-        # Trivial conditions that must 
+        # Trivial conditions that must hold
         if not prefixes:
             verboseprint(1, "No prefixes of type " + str(closure))
             return([False])
@@ -244,10 +244,10 @@ def isGPS(word, closure="ER", max_no_matters_closure_type=0):
     return([iszps, newdelta, newtheta])
 
 
-# In[13]:
+# In[9]:
 
 def timing(f):
-    """A decorator function timing a functions."""
+    """A decorator function timing a function."""
     def wrap(*args):
         time1 = time.time()
         ret = f(*args)
@@ -260,17 +260,17 @@ def timing(f):
 
 # ## Normalized form and directive bi-sequence
 
-# In[14]:
+# In[10]:
 
 bad_prefixes = ["(0R)*0E", "(1R)*1E", "(0R)+1E1E", "(1R)+0E0E"]
 bad_factors = ["1R0E1E", "1R1E0E", "0R0E1E", "0R1E0E", "1E0R1R",
                "1E1R0R", "0E0R1R", "0E1R0R"]
 
 
-# In[15]:
+# In[11]:
 
 def makeBiseq(delta, theta):
-    """Makes one sequence from the bi-sequence delta andm theta."""
+    """Makes one sequence from the bi-sequence delta and theta."""
     if len(delta) != len(theta):
         print("lengths of delta and theta are not equal.")
         return
@@ -292,7 +292,7 @@ def parseBiseq(biseq):
     return [delta, theta]
 
 
-# In[16]:
+# In[12]:
 
 def repare_ii(match, a):
     """Replaces the prefix (R^{i-1}E, a^i) by (R^iE, a^ia*)."""
@@ -334,7 +334,7 @@ def rep_3(match):
 norm_replace_functions = [rep_0, rep_1, rep_2, rep_3]
 
 
-# In[31]:
+# In[13]:
 
 def normalize(delta, theta):
     """Returns the normalized directive bi-sequence giving the same GPS word
@@ -366,7 +366,7 @@ def normalize(delta, theta):
     return parseBiseq(biseq)
 
 
-# In[18]:
+# In[14]:
 
 def isNormalized(delta, theta):
     """Checks directive bi-sequence is normalized."""
@@ -387,15 +387,15 @@ def isNormalized(delta, theta):
         return True
 
 
-# In[19]:
+# In[15]:
 
 def rreplace(s, old, new, occurrence):
-    """Replaces the last occurence of a factor in a string by a new one."""
+    """Replaces the last occurrence of a factor in a string by a new one."""
     li = s.rsplit(old, occurrence)
     return new.join(li)
 
 
-# In[29]:
+# In[16]:
 
 def maximizeRinBiseq(delta, theta):
     """Maximizes the occurrences of the antimorphism R in a directive 
@@ -429,7 +429,7 @@ def maximizeRinBiseq(delta, theta):
 
 # ## Testování
 
-# In[8]:
+# In[17]:
 
 def _testGPW(deltas, thetas, steps, seed = "", normalized = False, 
                       closure = "RE", max_no_matters_closure_type = 0, additional_operation = ""):
@@ -454,7 +454,7 @@ def _testGPW(deltas, thetas, steps, seed = "", normalized = False,
     print("počet biposloupností:" + str(number_of_true))
 
 
-# In[9]:
+# In[18]:
 
 @timing
 def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False, 
@@ -465,7 +465,7 @@ def testGPW_S_on_GPW(deltas, thetas, steps, seed = "", normalized = False,
     _testGPW(deltas, thetas, steps, seed, normalized, closure, max_no_matters_closure_type, "S")
 
 
-# In[10]:
+# In[19]:
 
 @timing
 def testGPW(deltas, thetas, steps, seed = "", normalized = False, 
