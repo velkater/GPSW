@@ -3,7 +3,8 @@
 
 # # Normalization over the alphabet $\{0,1,2\}$
 
-# In[6]:
+# In[10]:
+
 
 import gpc # library for work with GPS words over {0,1}
 import math
@@ -13,7 +14,8 @@ import re
 
 # ## Work with $E_i$-palindromes and closures
 
-# In[7]:
+# In[11]:
+
 
 def Ei(i):
     i = int(i)
@@ -24,13 +26,15 @@ def Ei(i):
     return ei
 
 
-# In[8]:
+# In[12]:
+
 
 # Example:
 print(Ei('1'))
 
 
-# In[9]:
+# In[13]:
+
 
 def isEipal(seq, i):
     """Checks if a string seq is an E_i palindrome."""
@@ -47,7 +51,8 @@ def isEipal(seq, i):
     return(True)
 
 
-# In[10]:
+# In[14]:
+
 
 # Example:
 print(isEipal("012", 1))
@@ -55,7 +60,8 @@ print(isEipal("002", 1))
 print(isEipal("01201", 2))
 
 
-# In[11]:
+# In[15]:
+
 
 def testPalindromicity(seq):
     """Checks if a seq is an palindrome or and E-palindrome and 
@@ -72,7 +78,8 @@ def testPalindromicity(seq):
         return [False]
 
 
-# In[12]:
+# In[16]:
+
 
 # Example:
 print(testPalindromicity("0210"))
@@ -81,7 +88,8 @@ print(testPalindromicity("010"))
 print(testPalindromicity("02110"))
 
 
-# In[13]:
+# In[17]:
+
 
 def makeEipalClosure (seq, i):
     """Makes E_i-th palindromic closure of a string."""
@@ -99,7 +107,8 @@ def makeEipalClosure (seq, i):
     return(closure)
 
 
-# In[14]:
+# In[18]:
+
 
 # Example:
 print(makeEipalClosure("01", 1))
@@ -108,7 +117,8 @@ print(makeEipalClosure("00", 0))
 print(makeEipalClosure("021210", 2))
 
 
-# In[15]:
+# In[19]:
+
 
 def make012Word(delta, theta, steps, seed = ""):
     """Makes a GPS over {0,1,2} from sequences delta and theta."""
@@ -126,7 +136,8 @@ def make012Word(delta, theta, steps, seed = ""):
     return(w)
 
 
-# In[16]:
+# In[20]:
+
 
 # Example:
 make012Word("0012", "0020", 4)
@@ -134,7 +145,8 @@ make012Word("0012", "0020", 4)
 
 # ## Naive function for checking normalization
 
-# In[17]:
+# In[21]:
+
 
 def is012NormalizedNaive(delta, theta, steps):
     """Checks if delta and theta are normalized and if not, 
@@ -175,7 +187,8 @@ def is012NormalizedNaive(delta, theta, steps):
     # from delta and theta.
 
 
-# In[18]:
+# In[22]:
+
 
 # Example: 
 print(is012NormalizedNaive("0012", "0020", 4))
@@ -194,7 +207,8 @@ print(is012NormalizedNaive("00120", "00210", 4))
 # we will go back to the original letters order. Of course, we want to do it, 
 # without having to compute the infinite word.
 
-# In[19]:
+# In[23]:
+
 
 def substitute(dic, seq):
     """Substitutes letters in a word according to rules in dic, if there is
@@ -208,7 +222,8 @@ def substitute(dic, seq):
     return newseq
 
 
-# In[20]:
+# In[24]:
+
 
 def compose(subs1, subs2):
     """Composes two substitutions of letter."""
@@ -223,14 +238,16 @@ def compose(subs1, subs2):
     return csub
 
 
-# In[21]:
+# In[25]:
+
 
 # Example:
 print(compose({}, {"1": "0", "0": "1"}))
 print(compose({"0": "1", "1": "0"}, {"1" : "2", "2" : "0", "0": "1"}))
 
 
-# In[22]:
+# In[26]:
+
 
 def changeLettersOrder(delta, theta):
     """ Change (delta, theta) so that the word obtained is the same at the 
@@ -259,7 +276,8 @@ def changeLettersOrder(delta, theta):
     return [delta, theta, subs]
 
 
-# In[23]:
+# In[27]:
+
 
 def changeLettersOrderBack(delta, theta, subs):
     """ Give back the original delta and theta that were transformed with 
@@ -270,7 +288,8 @@ def changeLettersOrderBack(delta, theta, subs):
     return [delta, theta]
 
 
-# In[24]:
+# In[28]:
+
 
 # Example: 
 ex1 = changeLettersOrder("111122220000", "11111RR00112")
@@ -297,7 +316,8 @@ print(changeLettersOrderBack(ex5[0], ex5[1], ex5[2]))
 # of $\Theta$ of lenght $l$ is equal to $E^l_i$. (We only solve the cases
 # when there is an $R$ instead of $E_0$ (e.g. $(0000, RE_0RE_0) \to (0000, E_0E_0E_0E_0)$).
 
-# In[25]:
+# In[29]:
+
 
 def initialNormalization(delta, theta):
     biseq = gpc.makeBiseq(delta, theta)
@@ -307,7 +327,8 @@ def initialNormalization(delta, theta):
     return gpc.parseBiseq(biseq)
 
 
-# In[26]:
+# In[30]:
+
 
 initialNormalization("000011", "R0R021")
 
@@ -333,7 +354,8 @@ initialNormalization("000011", "R0R021")
 # - check when $n$ is equal to 0 and when to 1, Pepa said it probably varies
 # - UPDATE: in the 26.th rule, it can be even -1..., check everywhere
 
-# In[27]:
+# In[49]:
+
 
 # List: bad prefix regex --> the new symbols instead of the last one
 bad_prefixes = [
@@ -341,17 +363,17 @@ bad_prefixes = [
     ["0012(0R12)*0R10", "1220", 2], # 2.
     ["0012(0R12)*01", "0R21", 3],  # 3.
     ["00121121", "200211", 4], # 4.
-    ["001210", "1120", 5], # 5. suggest to delete it, contained in 24
-    ["001212", "1R02", 6], # 6.
+    #["001210", "1120", 5], # 5. removed, special case of (sco) in 24
+    #["001212", "1R02", 6], # 6. removed, sco 22
     ["001221(1R11)*12", "1R22", 7], # 7.fixed rule and rewrite
     ["0012211R(111R)*10", "1100", 8], # 8.
-    ["001R", "120R", 9], # 9. ! Error, it is not a special case...
+    #["001R", "120R", 9], # 9. ! Error, it is not a special case... removed, sco 15
     ["001222", "210012", 10], # 10.
-    ["0011", "1221", 11], # 11.
+    #["0011", "1221", 11], # 11. removed sco rule 13 when rewritten
     ["0012(0R12)*00", "0R20", 12], # 12. fixed error
-    ["0012(0R12)*0R11", "1221", 13], # 13.
+    ["00(120R)*11", "1221", 13], # 13.
     ["(001221)*00122R", "211R", 14], # 14.
-    ["(001221)+001R","120R", 15], # 15.
+    ["(001221)*001R","120R", 15], # 15. * because of rule 9
     ["(001221)+0R","002R", 16], # 16.
     ["(001221)+1R2R", "222R", 17], # 17.
     ["(001221)*00120R2R", "201R", 18], # 18.
@@ -372,7 +394,8 @@ bad_prefixes = [
 # Next, we list all the possible cases of the 4 non-prefix rules. They follow 
 # below in a more readable form...
 
-# In[28]:
+# In[54]:
+
 
 a_b = [i[0]+i[1] for i in itertools.product('012', repeat = 2)]
 i = ["0", "1", "2"]
@@ -412,7 +435,7 @@ print( "Rules 1: (ab_1b_2, RE_iE_i) where b_1=E_i(b_2)")
 print(rules1Readable, "\n")
 
 rules2Readable = [gpc.parseBiseq(rule) for rule in rules2]
-print( "Rules 2: (ab_1b_2, E_iRR) where b_1=E_i(b_2)")
+print( "Rules 2: (ab_1b_2, E_iRR) where b_1=R(b_2) = b_2") # correction
 print(rules2Readable, "\n") 
 
 rules3Readable = [gpc.parseBiseq(rule) for rule in rules3]
@@ -424,7 +447,8 @@ print( "Rules 4: (ab_1b_2b_3, E_iE_jE_kE_k) where E_i(b_1)=E_j(b_2)= E_k(b_3)")
 print(rules4Readable, "\n") 
 
 
-# In[29]:
+# In[71]:
+
 
 def findNextBadFactor(biseq):
     """ Searching for the next (most left) non-prefix rule to apply."""
@@ -443,7 +467,7 @@ def findNextBadFactor(biseq):
         if match:
             gpc.verboseprint(1, "rule2:  " +                              str(gpc.parseBiseq(rule)) +                              " in biseq " + str(gpc.parseBiseq(biseq)))
             index = match.end() - 2
-            matches.append([index, rule[4]+rule[1]+Ei(rule[1])[int(rule[2])]
+            matches.append([index, rule[4]+rule[1]+rule[2]
                             + "R", 2])
             biseq = biseq[:index]
     for rule in rules3:
@@ -476,7 +500,8 @@ def findNextBadFactor(biseq):
     return final  
 
 
-# In[30]:
+# In[34]:
+
 
 def isNormalized(biseq):
     """ Function looking is there is a bad prefix of a bad factor
@@ -505,7 +530,8 @@ def isNormalized(biseq):
     return badfactor # bad factor to repare
 
 
-# In[31]:
+# In[35]:
+
 
 def applyRule(biseq, rule):
     """ Function that applies the correction 'rule' in the biseq."""
@@ -516,7 +542,8 @@ def applyRule(biseq, rule):
 
 # Here follows the main normalization algorithm.
 
-# In[51]:
+# In[36]:
+
 
 def normalize012(delta1, theta1):
     """Returns the normalized directive bi-sequence giving the same GPS word
@@ -545,7 +572,8 @@ def normalize012(delta1, theta1):
     return [notchanged, delta, theta]
 
 
-# In[54]:
+# In[37]:
+
 
 # We set the verbose for debugging to see the results
 gpc.verbose = 1
@@ -567,26 +595,44 @@ gpc.verbose = 1
 # * we checked all the rules for normalization (check once more)
 # * we checked where should be * and where should be +. Now it should be correct.
 # * rule 7 was corrected (2 at the end of the new delta) and rewritten to $(012(11)^n1, E_0E_2E_1(RE_1)^nE_2)$ and was corrected to be $(012(11)^n1, E_0E_2E_1(RE_1)^nE_2) \rightarrow (012(11)^n12, E_0E_2E_1(RE_1)^nRE_2)$ (the 2 in the end of $\delta$ was a 0
+# * rule 9 was removed because it is a special case of rule 15
+# * rule 5 was removed because it is a special case of rule 24
+# * rule 6 was removed because it is a special caseof rule 22
+# * rule 13 was rewritten to  (0(10)^n1, E_0(E_2R)^nE_1) a then rule we removed rule 11
+# * the second non-prefix rule was rewritten so that the normalized rule is $(ab_1b_2b_1, E_iRE_iR)$
 
 # **TO DO**
 # - test systematically all the prefixes and find good test cases (maybe ask Pepa for some of them)
 # - fixing the new problematic cases
 
-# ## The problematic cases...
+# In[48]:
 
-# ### Non-prefix rule 2 seems not to work well
-
-# In[75]:
 
 gpc.verbose = 1
-delta = "0101"
-theta = "02RR"
+delta = "01"
+theta = "0R"
 print(is012NormalizedNaive(delta, theta,len(delta)))
 print()
 normalize012(delta, theta)
 
 
-# In[47]:
+# ## The problematic cases...
+
+# ### Non-prefix rule 2 seems not to work well
+
+# In[65]:
+
+
+gpc.verbose = 1
+delta = "0011"
+theta = "00RR"
+print(is012NormalizedNaive(delta, theta,len(delta)))
+print()
+normalize012(delta, theta)
+
+
+# In[57]:
+
 
 gpc.verbose = 1
 delta = "0101"
@@ -598,7 +644,8 @@ normalize012(delta, theta)
 
 # ### Problems with skipping two pseudopalindromes (cases that are not catched by the algorithm)
 
-# In[69]:
+# In[40]:
+
 
 gpc.verbose = 1
 delta = "010212"
@@ -608,7 +655,8 @@ print()
 normalize012(delta, theta)
 
 
-# In[70]:
+# In[41]:
+
 
 gpc.verbose = 1
 delta = "010221"
@@ -618,7 +666,8 @@ print()
 normalize012(delta, theta)
 
 
-# In[71]:
+# In[42]:
+
 
 gpc.verbose = 1
 delta = "00112"
@@ -628,17 +677,20 @@ print()
 normalize012(delta, theta)
 
 
-# In[72]:
+# In[43]:
+
 
 ### Testing interface - this is how we caught the problem with skipping two pseudopalindromes
 
 
-# In[73]:
+# In[44]:
+
 
 gpc.verbose = 1
 
 
-# In[74]:
+# In[73]:
+
 
 # Testing rules, when they are prefixes, if the normalization is correct
 setofrules = set()
@@ -667,12 +719,14 @@ for rule in setofrules:
         gpc.verbose = 0
 
 
-# In[55]:
+# In[46]:
+
 
 gpc.verbose = 0
 
 
 # In[ ]:
+
 
 
 
