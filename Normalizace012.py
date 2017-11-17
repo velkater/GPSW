@@ -3,7 +3,7 @@
 
 # # Normalization over the alphabet $\{0,1,2\}$
 
-# In[10]:
+# In[1]:
 
 
 import gpc # library for work with GPS words over {0,1}
@@ -14,7 +14,7 @@ import re
 
 # ## Work with $E_i$-palindromes and closures
 
-# In[11]:
+# In[2]:
 
 
 def Ei(i):
@@ -26,14 +26,15 @@ def Ei(i):
     return ei
 
 
-# In[12]:
+# In[36]:
 
 
 # Example:
-print(Ei('1'))
+if __name__ == '__main__':
+    print(Ei('1'))
 
 
-# In[13]:
+# In[4]:
 
 
 def isEipal(seq, i):
@@ -51,16 +52,17 @@ def isEipal(seq, i):
     return(True)
 
 
-# In[14]:
+# In[38]:
 
 
 # Example:
-print(isEipal("012", 1))
-print(isEipal("002", 1))
-print(isEipal("01201", 2))
+if __name__ == '__main__':
+    print(isEipal("012", 1))
+    print(isEipal("002", 1))
+    print(isEipal("01201", 2))
 
 
-# In[15]:
+# In[6]:
 
 
 def testPalindromicity(seq):
@@ -78,17 +80,18 @@ def testPalindromicity(seq):
         return [False]
 
 
-# In[16]:
+# In[39]:
 
 
 # Example:
-print(testPalindromicity("0210"))
-print(testPalindromicity("00")) # We want 00 to be an E_0-palindrome
-print(testPalindromicity("010"))
-print(testPalindromicity("02110"))
+if __name__ == '__main__':
+    print(testPalindromicity("0210"))
+    print(testPalindromicity("00")) # We want 00 to be an E_0-palindrome
+    print(testPalindromicity("010"))
+    print(testPalindromicity("02110"))
 
 
-# In[17]:
+# In[8]:
 
 
 def makeEipalClosure (seq, i):
@@ -107,17 +110,18 @@ def makeEipalClosure (seq, i):
     return(closure)
 
 
-# In[18]:
+# In[45]:
 
 
 # Example:
-print(makeEipalClosure("01", 1))
-print(makeEipalClosure("00", 2))
-print(makeEipalClosure("00", 0))
-print(makeEipalClosure("021210", 2))
+if __name__ == '__main__':
+    print(makeEipalClosure("01", 1))
+    print(makeEipalClosure("00", 2))
+    print(makeEipalClosure("00", 0))
+    print(makeEipalClosure("021210", 2))
 
 
-# In[19]:
+# In[10]:
 
 
 def make012Word(delta, theta, steps, seed = ""):
@@ -136,16 +140,17 @@ def make012Word(delta, theta, steps, seed = ""):
     return(w)
 
 
-# In[20]:
+# In[46]:
 
 
 # Example:
-make012Word("0012", "0020", 4)
+if __name__ == '__main__':
+    make012Word("0012", "0020", 4)
 
 
 # ## Naive function for checking normalization
 
-# In[21]:
+# In[12]:
 
 
 def is012NormalizedNaive(delta, theta, steps):
@@ -187,12 +192,13 @@ def is012NormalizedNaive(delta, theta, steps):
     # from delta and theta.
 
 
-# In[22]:
+# In[40]:
 
 
 # Example: 
-print(is012NormalizedNaive("0012", "0020", 4))
-print(is012NormalizedNaive("00120", "00210", 4))
+if __name__ == '__main__':
+    print(is012NormalizedNaive("0012", "0020", 4))
+    print(is012NormalizedNaive("00120", "00210", 4))
 
 
 # ## Implementation of the normalization algorithm
@@ -207,7 +213,7 @@ print(is012NormalizedNaive("00120", "00210", 4))
 # we will go back to the original letters order. Of course, we want to do it, 
 # without having to compute the infinite word.
 
-# In[23]:
+# In[14]:
 
 
 def substitute(dic, seq):
@@ -222,7 +228,7 @@ def substitute(dic, seq):
     return newseq
 
 
-# In[24]:
+# In[15]:
 
 
 def compose(subs1, subs2):
@@ -238,19 +244,20 @@ def compose(subs1, subs2):
     return csub
 
 
-# In[25]:
+# In[41]:
 
 
 # Example:
-print(compose({}, {"1": "0", "0": "1"}))
-print(compose({"0": "1", "1": "0"}, {"1" : "2", "2" : "0", "0": "1"}))
+if __name__ == '__main__':
+    print(compose({}, {"1": "0", "0": "1"}))
+    print(compose({"0": "1", "1": "0"}, {"1" : "2", "2" : "0", "0": "1"}))
 
 
-# In[26]:
+# In[17]:
 
 
 def changeLettersOrder(delta, theta):
-    """ Change (delta, theta) so that the word obtained is the same at the 
+    """ Change (delta, theta) so that the word obtained is the same as the 
     original one, but the first symbol is 0, the second 1 and the third 2."""
     subs = {}
     subs2 = {"2": "1", "1": "2"}
@@ -276,7 +283,7 @@ def changeLettersOrder(delta, theta):
     return [delta, theta, subs]
 
 
-# In[27]:
+# In[18]:
 
 
 def changeLettersOrderBack(delta, theta, subs):
@@ -288,25 +295,26 @@ def changeLettersOrderBack(delta, theta, subs):
     return [delta, theta]
 
 
-# In[28]:
+# In[42]:
 
 
 # Example: 
-ex1 = changeLettersOrder("111122220000", "11111RR00112")
-print(ex1)
-print(changeLettersOrderBack(ex1[0], ex1[1], ex1[2]), "\n")
-ex2 = changeLettersOrder("000", "001")
-print(ex2)
-print(changeLettersOrderBack(ex2[0], ex2[1], ex2[2]), "\n")
-ex3 = changeLettersOrder("011", "02")
-print(ex3)
-print(changeLettersOrderBack(ex3[0], ex3[1], ex3[2]), "\n")
-ex4 = changeLettersOrder("0002", "0RR0")
-print(ex4)
-print(changeLettersOrderBack(ex4[0], ex4[1], ex4[2]), "\n")
-ex5 = changeLettersOrder("111120", "1RR10")
-print(ex5)
-print(changeLettersOrderBack(ex5[0], ex5[1], ex5[2]))
+if __name__ == '__main__':
+    ex1 = changeLettersOrder("111122220000", "11111RR00112")
+    print(ex1)
+    print(changeLettersOrderBack(ex1[0], ex1[1], ex1[2]), "\n")
+    ex2 = changeLettersOrder("000", "001")
+    print(ex2)
+    print(changeLettersOrderBack(ex2[0], ex2[1], ex2[2]), "\n")
+    ex3 = changeLettersOrder("011", "02")
+    print(ex3)
+    print(changeLettersOrderBack(ex3[0], ex3[1], ex3[2]), "\n")
+    ex4 = changeLettersOrder("0002", "0RR0")
+    print(ex4)
+    print(changeLettersOrderBack(ex4[0], ex4[1], ex4[2]), "\n")
+    ex5 = changeLettersOrder("111120", "1RR10")
+    print(ex5)
+    print(changeLettersOrderBack(ex5[0], ex5[1], ex5[2]))
 
 
 # ### Preprocessing of the beginning of the bi-sequence
@@ -316,7 +324,7 @@ print(changeLettersOrderBack(ex5[0], ex5[1], ex5[2]))
 # of $\Theta$ of lenght $l$ is equal to $E^l_i$. (We only solve the cases
 # when there is an $R$ instead of $E_0$ (e.g. $(0000, RE_0RE_0) \to (0000, E_0E_0E_0E_0)$).
 
-# In[29]:
+# In[20]:
 
 
 def initialNormalization(delta, theta):
@@ -327,19 +335,16 @@ def initialNormalization(delta, theta):
     return gpc.parseBiseq(biseq)
 
 
-# In[30]:
+# In[43]:
 
 
-initialNormalization("000011", "R0R021")
+if __name__ == '__main__':
+    initialNormalization("000011", "R0R021")
 
 
 # ### Auxiliary functions
 
 # Here is the list of the bad prefixes rewrited for infinite word having first occurences of 0, 1 and 2 in that order.
-# 
-# **TO DO** : 
-# - check the rewritten rules once more - DONE
-# - get from Pepa the last version - DONE
 
 # 
 # 
@@ -349,12 +354,8 @@ initialNormalization("000011", "R0R021")
 #     
 
 # Now we rewrite those prefixes in Regex.
-# 
-# **TO DO**:
-# - check when $n$ is equal to 0 and when to 1, Pepa said it probably varies
-# - UPDATE: in the 26.th rule, it can be even -1..., check everywhere
 
-# In[49]:
+# In[22]:
 
 
 # List: bad prefix regex --> the new symbols instead of the last one
@@ -362,7 +363,7 @@ bad_prefixes = [
     ["(00)*02", "0012", 1], # 1.
     ["0012(0R12)*0R10", "1220", 2], # 2.
     ["0012(0R12)*01", "0R21", 3],  # 3.
-    ["00121121", "200211", 4], # 4.
+    #["00121121", "200211", 4], # 4.
     #["001210", "1120", 5], # 5. removed, special case of (sco) in 24
     #["001212", "1R02", 6], # 6. removed, sco 22
     ["001221(1R11)*12", "1R22", 7], # 7.fixed rule and rewrite
@@ -387,14 +388,18 @@ bad_prefixes = [
     ["001221(1R11)*0020", "2R10", 26], # rewritten rule 26.
     ["001221(1R11)*1R2201", "0021", 27], # 27.
     ["001202", "0R12", 28], # new added rule 28.
-    ["0010", "122100", 29] # new added rule 29.
+    ["0010", "122100", 29], # new added rule 29.
+    ["00(120R)+202111", "120021", 30], # 1st added rule for 2 pseudopal
+    ["(00)+121121", "200211", 31], # 2nd added rule for 2 pseudopal
+    ["00(120R)+211020", "220110", 32], # 3rd added rule for 2 pseudopal
+    ["001221(1R11)*1R220020", "211200", 33] # $ 4th rules added for 2 pseudopal
 ]
 
 
 # Next, we list all the possible cases of the 4 non-prefix rules. They follow 
 # below in a more readable form...
 
-# In[54]:
+# In[44]:
 
 
 a_b = [i[0]+i[1] for i in itertools.product('012', repeat = 2)]
@@ -417,37 +422,37 @@ rules4 =[ k[0][0] + k[1][0] + k[0][1] + k[1][1] +
             Ei(k[1][2])[int(Ei(k[1][0])[int(k[0][1])])] + k[1][2]
          for k in itertools.product(a_b, ijk)]
 
+if __name__ == '__main__':
+    print("Intern rules 1:")
+    print(rules1, "\n")
+    print("Intern rules 2:")
+    print(rules2, "\n")
+    print("Intern rules 3:")
+    print(rules3, "\n")
+    print("Intern rules 4:")
+    print(rules4, "\n")
 
-print("Intern rules 1:")
-print(rules1, "\n")
-print("Intern rules 2:")
-print(rules2, "\n")
-print("Intern rules 3:")
-print(rules3, "\n")
-print("Intern rules 4:")
-print(rules4, "\n")
+    # Rules in a more "readable" form
+    print("-----------")
+    print("More readable rules:")
+    rules1Readable = [gpc.parseBiseq(rule) for rule in rules1]
+    print( "Rules 1: (ab_1b_2, RE_iE_i) where b_1=E_i(b_2)")
+    print(rules1Readable, "\n")
 
-# Rules in a more "readable" form
-print("-----------")
-print("More readable rules:")
-rules1Readable = [gpc.parseBiseq(rule) for rule in rules1]
-print( "Rules 1: (ab_1b_2, RE_iE_i) where b_1=E_i(b_2)")
-print(rules1Readable, "\n")
+    rules2Readable = [gpc.parseBiseq(rule) for rule in rules2]
+    print( "Rules 2: (ab_1b_2, E_iRR) where b_1=R(b_2) = b_2") # correction
+    print(rules2Readable, "\n") 
 
-rules2Readable = [gpc.parseBiseq(rule) for rule in rules2]
-print( "Rules 2: (ab_1b_2, E_iRR) where b_1=R(b_2) = b_2") # correction
-print(rules2Readable, "\n") 
+    rules3Readable = [gpc.parseBiseq(rule) for rule in rules3]
+    print( "Rules 3: (ab_1b_2, E_iE_jE_i) where E_i(b_1)=E_j(b_2)")
+    print(rules3Readable, "\n")  
 
-rules3Readable = [gpc.parseBiseq(rule) for rule in rules3]
-print( "Rules 3: (ab_1b_2, E_iE_jE_i) where E_i(b_1)=E_j(b_2)")
-print(rules3Readable, "\n")  
-
-rules4Readable = [gpc.parseBiseq(rule) for rule in rules4]
-print( "Rules 4: (ab_1b_2b_3, E_iE_jE_kE_k) where E_i(b_1)=E_j(b_2)= E_k(b_3)")
-print(rules4Readable, "\n") 
+    rules4Readable = [gpc.parseBiseq(rule) for rule in rules4]
+    print( "Rules 4: (ab_1b_2b_3, E_iE_jE_kE_k) where E_i(b_1)=E_j(b_2)= E_k(b_3)")
+    print(rules4Readable, "\n") 
 
 
-# In[71]:
+# In[24]:
 
 
 def findNextBadFactor(biseq):
@@ -500,7 +505,7 @@ def findNextBadFactor(biseq):
     return final  
 
 
-# In[34]:
+# In[25]:
 
 
 def isNormalized(biseq):
@@ -530,7 +535,7 @@ def isNormalized(biseq):
     return badfactor # bad factor to repare
 
 
-# In[35]:
+# In[26]:
 
 
 def applyRule(biseq, rule):
@@ -542,7 +547,7 @@ def applyRule(biseq, rule):
 
 # Here follows the main normalization algorithm.
 
-# In[36]:
+# In[27]:
 
 
 def normalize012(delta1, theta1):
@@ -572,7 +577,7 @@ def normalize012(delta1, theta1):
     return [notchanged, delta, theta]
 
 
-# In[37]:
+# In[28]:
 
 
 # We set the verbose for debugging to see the results
@@ -587,9 +592,9 @@ gpc.verbose = 1
 
 # ## Changes:
 # 
-# * vytvořilo se nové pravidlo (28): $(010, E_0E_0E_2) \rightarrow (0101, E_0E_2RE_2)$ (mělo to stejný efekt jako pravidlo $(010 RE_2E_2)$, které v neprefixových pravidlech je, ale v prefixových chybělo)
+# * a new rule (28) was created: $(010, E_0E_0E_2) \rightarrow (0101, E_0E_2RE_2)$ (it had the same effect as $(010 RE_2E_2)$, which is in the non-prefix rule but is missing from the prefix rules)
 # * in the rule 20, we change + to *
-# * we add a new prefix rule (29) from the Pozorovani 3.7 2nd dot for $l=1$ (for $l>1$ it uses rule 28 and then uses other rules). The rule is $(01, 00) -> (0120, 0210)$.
+# * we add a new prefix rule (29) from the Pozorovani 3.7 2nd dot for $l=1$ (for $l>1$ it uses rule 28 and then uses other rules). The rule is $(01, E_0E_0) \rightarrow (0120, E_0E_2E_1E_0)$.
 # * fixing rule 4 that was not normalized: rule 4 $(0112, E_0 E_2 E_1 E_1)$ instead of $(01120, E_0 E_2 E_1 E_0 E_1)$ shoud be rewritten as $(011201, E_0 E_2 E_1 E_0 E_2 E_1)$
 # * the rule 26 was rewritten, because Pepa said $n$ could take the value -1. (the prefix from rules 1 $(012, E_RE_0E_0)$ did not work correctly, the final result was not normalized, it was ['01202', '02100'] instead of [False, '012021', '0210R0']
 # * we checked all the rules for normalization (check once more)
@@ -600,64 +605,21 @@ gpc.verbose = 1
 # * rule 6 was removed because it is a special caseof rule 22
 # * rule 13 was rewritten to  (0(10)^n1, E_0(E_2R)^nE_1) a then rule we removed rule 11
 # * the second non-prefix rule was rewritten so that the normalized rule is $(ab_1b_2b_1, E_iRE_iR)$
+# * we added 4 new rules when two pseudopalindromes are skipped:
+#     - $(0(10)^l221, E_0(E_2R)^lE_0E_1E_1) \rightarrow (0(10)^l22102, E_0(E_2R)^lE_0E_1E_2E_0E_1)$ (30)
+#     - $(0^l112, E_0^lE_2E_1E_1) \rightarrow (0^l11201, E_0^lE_2E_1E_0E_2E_1)$ (31)
+#     - $(0(10)^l212, E_0(E_2R)^lE_1E_0E_0) \rightarrow (0(10)^l21201, E_0(E_2R)^lE_1E_0E_2E_1E_0)$ (32)
+#     - $(012(11)^l1202, E_0E_2E_1(RE_1)^lRE_2E_0E_0) \rightarrow (012(11)^l120210, E_0E_2E_1(RE_1)^lRE_2E_0E_1E_2E_0)$ (33)
+# * rule 4 was removed because it is a special case of rule 31
 
 # **TO DO**
 # - test systematically all the prefixes and find good test cases (maybe ask Pepa for some of them)
 # - fixing the new problematic cases
 
-# In[48]:
+# In[29]:
 
 
-gpc.verbose = 1
-delta = "01"
-theta = "0R"
-print(is012NormalizedNaive(delta, theta,len(delta)))
-print()
-normalize012(delta, theta)
-
-
-# ## The problematic cases...
-
-# ### Non-prefix rule 2 seems not to work well
-
-# In[65]:
-
-
-gpc.verbose = 1
-delta = "0011"
-theta = "00RR"
-print(is012NormalizedNaive(delta, theta,len(delta)))
-print()
-normalize012(delta, theta)
-
-
-# In[57]:
-
-
-gpc.verbose = 1
-delta = "0101"
-theta = "02RR"
-print(is012NormalizedNaive(delta, theta,len(delta)))
-print()
-normalize012(delta, theta)
-
-
-# ### Problems with skipping two pseudopalindromes (cases that are not catched by the algorithm)
-
-# In[40]:
-
-
-gpc.verbose = 1
-delta = "010212"
-theta = "02R100"
-print(is012NormalizedNaive(delta, theta,len(delta)))
-print()
-normalize012(delta, theta)
-
-
-# In[41]:
-
-
+#for testing
 gpc.verbose = 1
 delta = "010221"
 theta = "02R011"
@@ -666,30 +628,23 @@ print()
 normalize012(delta, theta)
 
 
-# In[42]:
+# ## The problematic cases...
 
+# ### Problems with skipping two pseudopalindromes (cases that are not catched by the algorithm)
 
-gpc.verbose = 1
-delta = "00112"
-theta = "00211"
-print(is012NormalizedNaive(delta, theta,len(delta)))
-print()
-normalize012(delta, theta)
-
-
-# In[43]:
+# In[30]:
 
 
 ### Testing interface - this is how we caught the problem with skipping two pseudopalindromes
 
 
-# In[44]:
+# In[31]:
 
 
 gpc.verbose = 1
 
 
-# In[73]:
+# In[32]:
 
 
 # Testing rules, when they are prefixes, if the normalization is correct
@@ -719,7 +674,7 @@ for rule in setofrules:
         gpc.verbose = 0
 
 
-# In[46]:
+# In[33]:
 
 
 gpc.verbose = 0
