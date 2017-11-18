@@ -3,7 +3,7 @@
 
 # # Normalization over the alphabet $\{0,1,2\}$
 
-# In[2]:
+# In[1]:
 
 
 import gpc # library for work with GPS words over {0,1}
@@ -14,7 +14,7 @@ import re
 
 # ## Work with $E_i$-palindromes and closures
 
-# In[3]:
+# In[2]:
 
 
 def Ei(i):
@@ -26,7 +26,7 @@ def Ei(i):
     return ei
 
 
-# In[4]:
+# In[3]:
 
 
 # Example:
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     print(Ei('1'))
 
 
-# In[5]:
+# In[4]:
 
 
 def isEipal(seq, i):
@@ -52,7 +52,7 @@ def isEipal(seq, i):
     return(True)
 
 
-# In[6]:
+# In[5]:
 
 
 # Example:
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     print(isEipal("01201", 2))
 
 
-# In[7]:
+# In[6]:
 
 
 def testPalindromicity(seq):
@@ -80,7 +80,7 @@ def testPalindromicity(seq):
         return [False]
 
 
-# In[8]:
+# In[7]:
 
 
 # Example:
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     print(testPalindromicity("02110"))
 
 
-# In[9]:
+# In[8]:
 
 
 def makeEipalClosure (seq, i):
@@ -110,7 +110,7 @@ def makeEipalClosure (seq, i):
     return(closure)
 
 
-# In[10]:
+# In[9]:
 
 
 # Example:
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     print(makeEipalClosure("021210", 2))
 
 
-# In[11]:
+# In[10]:
 
 
 def make012Word(delta, theta, steps, seed = ""):
@@ -140,7 +140,7 @@ def make012Word(delta, theta, steps, seed = ""):
     return(w)
 
 
-# In[12]:
+# In[11]:
 
 
 # Example:
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
 # ## Naive function for checking normalization
 
-# In[13]:
+# In[12]:
 
 
 def is012NormalizedNaive(delta, theta, steps):
@@ -192,7 +192,7 @@ def is012NormalizedNaive(delta, theta, steps):
     # from delta and theta.
 
 
-# In[14]:
+# In[13]:
 
 
 # Example: 
@@ -213,7 +213,7 @@ if __name__ == '__main__':
 # we will go back to the original letters order. Of course, we want to do it, 
 # without having to compute the infinite word.
 
-# In[15]:
+# In[14]:
 
 
 def substitute(dic, seq):
@@ -228,7 +228,7 @@ def substitute(dic, seq):
     return newseq
 
 
-# In[16]:
+# In[15]:
 
 
 def compose(subs1, subs2):
@@ -244,7 +244,7 @@ def compose(subs1, subs2):
     return csub
 
 
-# In[17]:
+# In[16]:
 
 
 # Example:
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     print(compose({"0": "1", "1": "0"}, {"1" : "2", "2" : "0", "0": "1"}))
 
 
-# In[18]:
+# In[17]:
 
 
 def changeLettersOrder(delta, theta):
@@ -283,7 +283,7 @@ def changeLettersOrder(delta, theta):
     return [delta, theta, subs]
 
 
-# In[19]:
+# In[18]:
 
 
 def changeLettersOrderBack(delta, theta, subs):
@@ -295,7 +295,7 @@ def changeLettersOrderBack(delta, theta, subs):
     return [delta, theta]
 
 
-# In[20]:
+# In[19]:
 
 
 # Example: 
@@ -324,7 +324,7 @@ if __name__ == '__main__':
 # of $\Theta$ of lenght $l$ is equal to $E^l_i$. (We only solve the cases
 # when there is an $R$ instead of $E_0$ (e.g. $(0000, RE_0RE_0) \to (0000, E_0E_0E_0E_0)$).
 
-# In[21]:
+# In[20]:
 
 
 def initialNormalization(delta, theta):
@@ -335,7 +335,7 @@ def initialNormalization(delta, theta):
     return gpc.parseBiseq(biseq)
 
 
-# In[22]:
+# In[21]:
 
 
 if __name__ == '__main__':
@@ -355,7 +355,7 @@ if __name__ == '__main__':
 
 # Now we rewrite those prefixes in Regex.
 
-# In[23]:
+# In[134]:
 
 
 # List: bad prefix regex --> the new symbols instead of the last one
@@ -387,16 +387,18 @@ bad_prefixes = [
     ["0012(0R12)*0R2112", "1022", 25], # 25.
     ["001221(1R11)*0020", "2R10", 26], # rewritten rule 26.
     ["001221(1R11)*1R2201", "0021", 27], # 27.
-    ["001202", "0R12", 28], # new added rule 28.
+    ["(00)+1202", "0R12", 28], # new added rule 28. !!!!
     ["0010", "122100", 29], # new added rule 29.
     ["00(120R)+202111", "120021", 30], # 1st added rule for 2 pseudopal
     ["(00)+121121", "200211", 31], # 2nd added rule for 2 pseudopal
     ["00(120R)+211020", "220110", 32], # 3rd added rule for 2 pseudopal
-    ["001221(1R11)*1R220020", "211200", 33] # $ 4th rules added for 2 pseudopal
+    ["001221(1R11)*1R220020", "211200", 33], # 4th rules added for 2 pseudopal
+    ["(00)+001111", "1R11", 34], # from (011, R11)
+    ["(00)+001020", "2R10", 35] # from (012, R00)
 ]
 
 
-# In[24]:
+# In[99]:
 
 
 if __name__ == '__main__':
@@ -406,7 +408,7 @@ if __name__ == '__main__':
 # Next, we list all the possible cases of the 4 non-prefix rules. They follow 
 # below in a more readable form...
 
-# In[25]:
+# In[24]:
 
 
 a_b = [i[0]+i[1] for i in itertools.product('012', repeat = 2)]
@@ -459,7 +461,7 @@ if __name__ == '__main__':
     print(rules4Readable, "\n") 
 
 
-# In[35]:
+# In[71]:
 
 
 def findNextBadFactor(biseq):
@@ -471,7 +473,7 @@ def findNextBadFactor(biseq):
             gpc.verboseprint(1, "rule1: " +                              str(gpc.parseBiseq(rule)) +                              " in biseq " + str(gpc.parseBiseq(biseq)))
             index = match.end() - 2 # The position that would be corrected
             #Here follows the correction:
-            matches.append([index, rule[4]+"R"+ Ei(rule[3])[int(rule[2])] + 
+            matches.append([index, rule[4]+"R"+ rule[2] + #Ei(rule[3])[int(rule[2])] + 
                            rule[3], 2])
             biseq = biseq[:index + 3] # There is no sense searching further
     for rule in rules2:
@@ -512,7 +514,7 @@ def findNextBadFactor(biseq):
     return final  
 
 
-# In[27]:
+# In[26]:
 
 
 def isNormalized(biseq):
@@ -542,7 +544,7 @@ def isNormalized(biseq):
     return badfactor # bad factor to repare
 
 
-# In[28]:
+# In[27]:
 
 
 def applyRule(biseq, rule):
@@ -554,7 +556,7 @@ def applyRule(biseq, rule):
 
 # Here follows the main normalization algorithm.
 
-# In[29]:
+# In[28]:
 
 
 def normalize012(delta1, theta1):
@@ -584,7 +586,7 @@ def normalize012(delta1, theta1):
     return [notchanged, delta, theta]
 
 
-# In[30]:
+# In[29]:
 
 
 # We set the verbose for debugging to see the results
@@ -624,7 +626,7 @@ gpc.verbose = 1
 # - fixing the new problematic cases
 # - case of rule 29 being not normalized in rule 2
 
-# In[31]:
+# In[143]:
 
 
 #for testing
@@ -636,22 +638,10 @@ print()
 normalize012(delta, theta)
 
 
-# In[32]:
+# In[144]:
 
 
 gpc.verbose = 0
-
-
-# In[33]:
-
-
-testPalindromicity("0120")
-
-
-# In[34]:
-
-
-make012Word("01012", "02R20", 5)
 
 
 # In[ ]:
