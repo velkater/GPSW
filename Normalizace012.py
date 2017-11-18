@@ -3,7 +3,7 @@
 
 # # Normalization over the alphabet $\{0,1,2\}$
 
-# In[1]:
+# In[2]:
 
 
 import gpc # library for work with GPS words over {0,1}
@@ -14,7 +14,7 @@ import re
 
 # ## Work with $E_i$-palindromes and closures
 
-# In[2]:
+# In[3]:
 
 
 def Ei(i):
@@ -26,7 +26,7 @@ def Ei(i):
     return ei
 
 
-# In[36]:
+# In[4]:
 
 
 # Example:
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     print(Ei('1'))
 
 
-# In[4]:
+# In[5]:
 
 
 def isEipal(seq, i):
@@ -52,7 +52,7 @@ def isEipal(seq, i):
     return(True)
 
 
-# In[38]:
+# In[6]:
 
 
 # Example:
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     print(isEipal("01201", 2))
 
 
-# In[6]:
+# In[7]:
 
 
 def testPalindromicity(seq):
@@ -80,7 +80,7 @@ def testPalindromicity(seq):
         return [False]
 
 
-# In[39]:
+# In[8]:
 
 
 # Example:
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     print(testPalindromicity("02110"))
 
 
-# In[8]:
+# In[9]:
 
 
 def makeEipalClosure (seq, i):
@@ -110,7 +110,7 @@ def makeEipalClosure (seq, i):
     return(closure)
 
 
-# In[45]:
+# In[10]:
 
 
 # Example:
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     print(makeEipalClosure("021210", 2))
 
 
-# In[10]:
+# In[11]:
 
 
 def make012Word(delta, theta, steps, seed = ""):
@@ -140,7 +140,7 @@ def make012Word(delta, theta, steps, seed = ""):
     return(w)
 
 
-# In[46]:
+# In[12]:
 
 
 # Example:
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
 # ## Naive function for checking normalization
 
-# In[12]:
+# In[13]:
 
 
 def is012NormalizedNaive(delta, theta, steps):
@@ -192,7 +192,7 @@ def is012NormalizedNaive(delta, theta, steps):
     # from delta and theta.
 
 
-# In[40]:
+# In[14]:
 
 
 # Example: 
@@ -213,7 +213,7 @@ if __name__ == '__main__':
 # we will go back to the original letters order. Of course, we want to do it, 
 # without having to compute the infinite word.
 
-# In[14]:
+# In[15]:
 
 
 def substitute(dic, seq):
@@ -228,7 +228,7 @@ def substitute(dic, seq):
     return newseq
 
 
-# In[15]:
+# In[16]:
 
 
 def compose(subs1, subs2):
@@ -244,7 +244,7 @@ def compose(subs1, subs2):
     return csub
 
 
-# In[41]:
+# In[17]:
 
 
 # Example:
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     print(compose({"0": "1", "1": "0"}, {"1" : "2", "2" : "0", "0": "1"}))
 
 
-# In[17]:
+# In[18]:
 
 
 def changeLettersOrder(delta, theta):
@@ -283,7 +283,7 @@ def changeLettersOrder(delta, theta):
     return [delta, theta, subs]
 
 
-# In[18]:
+# In[19]:
 
 
 def changeLettersOrderBack(delta, theta, subs):
@@ -295,7 +295,7 @@ def changeLettersOrderBack(delta, theta, subs):
     return [delta, theta]
 
 
-# In[42]:
+# In[20]:
 
 
 # Example: 
@@ -324,7 +324,7 @@ if __name__ == '__main__':
 # of $\Theta$ of lenght $l$ is equal to $E^l_i$. (We only solve the cases
 # when there is an $R$ instead of $E_0$ (e.g. $(0000, RE_0RE_0) \to (0000, E_0E_0E_0E_0)$).
 
-# In[20]:
+# In[21]:
 
 
 def initialNormalization(delta, theta):
@@ -335,7 +335,7 @@ def initialNormalization(delta, theta):
     return gpc.parseBiseq(biseq)
 
 
-# In[43]:
+# In[22]:
 
 
 if __name__ == '__main__':
@@ -355,13 +355,13 @@ if __name__ == '__main__':
 
 # Now we rewrite those prefixes in Regex.
 
-# In[22]:
+# In[23]:
 
 
 # List: bad prefix regex --> the new symbols instead of the last one
 bad_prefixes = [
     ["(00)*02", "0012", 1], # 1.
-    ["0012(0R12)*0R10", "1220", 2], # 2.
+    ["00(120R)+10", "1220", 2], # 2.
     ["0012(0R12)*01", "0R21", 3],  # 3.
     #["00121121", "200211", 4], # 4.
     #["001210", "1120", 5], # 5. removed, special case of (sco) in 24
@@ -396,10 +396,17 @@ bad_prefixes = [
 ]
 
 
+# In[24]:
+
+
+if __name__ == '__main__':
+    print(len(bad_prefixes))
+
+
 # Next, we list all the possible cases of the 4 non-prefix rules. They follow 
 # below in a more readable form...
 
-# In[44]:
+# In[25]:
 
 
 a_b = [i[0]+i[1] for i in itertools.product('012', repeat = 2)]
@@ -452,7 +459,7 @@ if __name__ == '__main__':
     print(rules4Readable, "\n") 
 
 
-# In[24]:
+# In[35]:
 
 
 def findNextBadFactor(biseq):
@@ -466,7 +473,7 @@ def findNextBadFactor(biseq):
             #Here follows the correction:
             matches.append([index, rule[4]+"R"+ Ei(rule[3])[int(rule[2])] + 
                            rule[3], 2])
-            biseq = biseq[:index] # There is no sense searching further
+            biseq = biseq[:index + 3] # There is no sense searching further
     for rule in rules2:
         match = re.match('([012R][012R])*('+ rule + ')', biseq)
         if match:
@@ -474,7 +481,7 @@ def findNextBadFactor(biseq):
             index = match.end() - 2
             matches.append([index, rule[4]+rule[1]+rule[2]
                             + "R", 2])
-            biseq = biseq[:index]
+            biseq = biseq[:index + 3]
     for rule in rules3:
         match = re.match('([012R][012R])*('+ rule + ')', biseq)
         if match:
@@ -483,7 +490,7 @@ def findNextBadFactor(biseq):
             matches.append([index, rule[4]+Ei(rule[1])[int(rule[3])] 
                             + Ei(rule[1])[int(Ei(rule[3])[int(rule[2])])] + 
                             rule[1], 2])
-            biseq = biseq[:index]
+            biseq = biseq[:index + 3]
     for rule in rules4:
         match = re.match('([012R][012R])*('+ rule + ')', biseq)
         if match:
@@ -491,7 +498,7 @@ def findNextBadFactor(biseq):
             index = match.end() - 2
             matches.append([index, rule[6]+rule[1]+rule[2]+rule[3]+rule[4] +
                             rule[5], 2]) # nema tu byt 4??? asi ne
-            biseq = biseq[:index]
+            biseq = biseq[:index + 3]
     
     gpc.verboseprint(1, "all non-prefix matches: " + str(matches))
     # Final "leading" prefix
@@ -505,7 +512,7 @@ def findNextBadFactor(biseq):
     return final  
 
 
-# In[25]:
+# In[27]:
 
 
 def isNormalized(biseq):
@@ -535,7 +542,7 @@ def isNormalized(biseq):
     return badfactor # bad factor to repare
 
 
-# In[26]:
+# In[28]:
 
 
 def applyRule(biseq, rule):
@@ -547,7 +554,7 @@ def applyRule(biseq, rule):
 
 # Here follows the main normalization algorithm.
 
-# In[27]:
+# In[29]:
 
 
 def normalize012(delta1, theta1):
@@ -577,7 +584,7 @@ def normalize012(delta1, theta1):
     return [notchanged, delta, theta]
 
 
-# In[28]:
+# In[30]:
 
 
 # We set the verbose for debugging to see the results
@@ -615,69 +622,36 @@ gpc.verbose = 1
 # **TO DO**
 # - test systematically all the prefixes and find good test cases (maybe ask Pepa for some of them)
 # - fixing the new problematic cases
+# - case of rule 29 being not normalized in rule 2
 
-# In[29]:
+# In[31]:
 
 
 #for testing
 gpc.verbose = 1
-delta = "010221"
-theta = "02R011"
+delta = "0121202"
+theta = "021R200"
 print(is012NormalizedNaive(delta, theta,len(delta)))
 print()
 normalize012(delta, theta)
 
 
-# ## The problematic cases...
-
-# ### Problems with skipping two pseudopalindromes (cases that are not catched by the algorithm)
-
-# In[30]:
-
-
-### Testing interface - this is how we caught the problem with skipping two pseudopalindromes
-
-
-# In[31]:
-
-
-gpc.verbose = 1
-
-
 # In[32]:
 
 
-# Testing rules, when they are prefixes, if the normalization is correct
-setofrules = set()
 gpc.verbose = 0
-for rule in rules4:
-    d = gpc.parseBiseq(rule)[0]
-    t = gpc.parseBiseq(rule)[1]
-    change =  changeLettersOrder(d,t)
-    setofrules.add(gpc.makeBiseq(change[0],change[1]))
-
-print(list(map(gpc.parseBiseq, setofrules)))
-print()
-    
-for rule in setofrules:
-    d = gpc.parseBiseq(rule)[0]
-    t = gpc.parseBiseq(rule)[1]
-    rnaive = is012NormalizedNaive(d,t, len(t))
-    r = normalize012(d,t)
-    if rnaive != r:
-        gpc.verbose  = 1
-        print(d,t)
-        print(is012NormalizedNaive(d,t, len(t)))
-        print()
-        print(normalize012(d,t))
-        print('---------')
-        gpc.verbose = 0
 
 
 # In[33]:
 
 
-gpc.verbose = 0
+testPalindromicity("0120")
+
+
+# In[34]:
+
+
+make012Word("01012", "02R20", 5)
 
 
 # In[ ]:
