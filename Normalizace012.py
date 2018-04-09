@@ -355,12 +355,13 @@ if __name__ == '__main__':
 
 # Now we rewrite those prefixes in Regex.
 
-# In[134]:
+# In[22]:
 
 
 # List: bad prefix regex --> the new symbols instead of the last one
 bad_prefixes = [
     ["(00)*02", "0012", 1], # 1.
+    ["0010", "122100", 29], # new added rule 29.
     ["00(120R)+10", "1220", 2], # 2.
     ["0012(0R12)*01", "0R21", 3],  # 3.
     #["00121121", "200211", 4], # 4.
@@ -372,33 +373,32 @@ bad_prefixes = [
     ["001222", "210012", 10], # 10.
     #["0011", "1221", 11], # 11. removed sco rule 13 when rewritten
     ["0012(0R12)*00", "0R20", 12], # 12. fixed error
-    ["00(120R)*11", "1221", 13], # 13.
-    ["(001221)*00122R", "211R", 14], # 14.
-    ["(001221)*001R","120R", 15], # 15. * because of rule 9
-    ["(001221)+0R","002R", 16], # 16.
-    ["(001221)+1R2R", "222R", 17], # 17.
-    ["(001221)*00120R2R", "201R", 18], # 18.
-    ["(001221)+002R2R", "210R", 19], # 19.
-    ["00(120R)*122111", "1R11", 20], # 20.
-    ["0012(0R12)*0R2022", "2112", 21], # 21.
-    ["(00)+1212", "1R02", 22], # 22.
+    ["00(120R)*11", "1221", 13], # 13.-- 9
+    ["(001221)*00122R", "211R", 14], # 14. --10
+    ["(001221)*001R","120R", 15], # 15. * because of rule 9 --11
+    ["(001221)+0R","002R", 16], # 16. --12
+    ["(001221)+1R2R", "222R", 17], # 17. --13
+    ["(001221)+002R2R", "210R", 19], # 19. --14
+    ["(001221)*00120R2R", "201R", 18], # 18. --15
+    ["00(120R)*122111", "1R11", 20], # 20. -- 16
+    ["0012(0R12)*0R2022", "2112", 21], # 21. --17
+    ["(00)+1212", "1R02", 22], # 22. --18
     ["0012(0R12)+2020", "2R10", 23], # 23. (can be also + and then rule3)
-    ["(00)*1210", "1120", 24], # 24.
-    ["0012(0R12)*0R2112", "1022", 25], # 25.
-    ["001221(1R11)*0020", "2R10", 26], # rewritten rule 26.
-    ["001221(1R11)*1R2201", "0021", 27], # 27.
-    ["(00)+1202", "0R12", 28], # new added rule 28. !!!!
-    ["0010", "122100", 29], # new added rule 29.
+    ["(00)+1210", "1120", 24], # 24. --20
+    ["0012(0R12)*0R2112", "1022", 25], # 25. -- 21
+    ["001221(1R11)*0020", "2R10", 26], # rewritten rule 26. -- 22
+    ["001221(1R11)*1R2201", "0021", 27], # 27. -- 23
+    ["(00)+1202", "0R12", 28], # new added rule 28. !!!! -- 24
+    ["(00)+001111", "1R11", 34], # from (011, R11)
+    ["(00)+001020", "2R10", 35], # from (012, R00)
     ["00(120R)+202111", "120021", 30], # 1st added rule for 2 pseudopal
     ["(00)+121121", "200211", 31], # 2nd added rule for 2 pseudopal
     ["00(120R)+211020", "220110", 32], # 3rd added rule for 2 pseudopal
-    ["001221(1R11)*1R220020", "211200", 33], # 4th rules added for 2 pseudopal
-    ["(00)+001111", "1R11", 34], # from (011, R11)
-    ["(00)+001020", "2R10", 35] # from (012, R00)
+    ["001221(1R11)*1R220020", "211200", 33] # 4th rules added for 2 pseudopal
 ]
 
 
-# In[99]:
+# In[23]:
 
 
 if __name__ == '__main__':
@@ -461,7 +461,7 @@ if __name__ == '__main__':
     print(rules4Readable, "\n") 
 
 
-# In[71]:
+# In[25]:
 
 
 def findNextBadFactor(biseq):
@@ -601,7 +601,7 @@ gpc.verbose = 1
 
 # ## Changes:
 # 
-# * a new rule (28) was created: $(010, E_0E_0E_2) \rightarrow (0101, E_0E_2RE_2)$ (it had the same effect as $(010 RE_2E_2)$, which is in the non-prefix rule but is missing from the prefix rules)
+# * a new rule (28) was created: $(010, E_0E_0E_2) \rightarrow (0101, E_0E_2RE_2)$ (it had the same effect as $(010 RE_2E_2)$, which is in the non-prefix rule but is missing from the prefix rules). It was then extended to zeros in the prefix!
 # * in the rule 20, we change + to *
 # * we add a new prefix rule (29) from the Pozorovani 3.7 2nd dot for $l=1$ (for $l>1$ it uses rule 28 and then uses other rules). The rule is $(01, E_0E_0) \rightarrow (0120, E_0E_2E_1E_0)$.
 # * fixing rule 4 that was not normalized: rule 4 $(0112, E_0 E_2 E_1 E_1)$ instead of $(01120, E_0 E_2 E_1 E_0 E_1)$ shoud be rewritten as $(011201, E_0 E_2 E_1 E_0 E_2 E_1)$
@@ -620,29 +620,95 @@ gpc.verbose = 1
 #     - $(0(10)^l212, E_0(E_2R)^lE_1E_0E_0) \rightarrow (0(10)^l21201, E_0(E_2R)^lE_1E_0E_2E_1E_0)$ (32)
 #     - $(012(11)^l1202, E_0E_2E_1(RE_1)^lRE_2E_0E_0) \rightarrow (012(11)^l120210, E_0E_2E_1(RE_1)^lRE_2E_0E_1E_2E_0)$ (33)
 # * rule 4 was removed because it is a special case of rule 31
+# * we added prefixes corresponding to rule 1 with zeros before
+# * we changed the first non prefix rule
 
 # **TO DO**
 # - test systematically all the prefixes and find good test cases (maybe ask Pepa for some of them)
 # - fixing the new problematic cases
 # - case of rule 29 being not normalized in rule 2
 
-# In[143]:
+# In[30]:
 
 
 #for testing
 gpc.verbose = 1
-delta = "0121202"
-theta = "021R200"
+delta = "01022101"
+theta = "RR021210"
 print(is012NormalizedNaive(delta, theta,len(delta)))
 print()
 normalize012(delta, theta)
 
 
-# In[144]:
+# In[31]:
 
 
-gpc.verbose = 0
+gpc.verbose = 1
 
+
+# In[43]:
+
+
+delta = "01021"
+theta = "02R12"
+normalize012(delta, theta)
+make012Word(delta, theta, len(delta))
+
+
+# In[33]:
+
+
+periodic_factors = [ (i[0] + i[2] +i[1]+ i[1] + i[2] + i[0])*3 for i in itertools.permutations('012')]
+for f in periodic_factors:
+    print(gpc.parseBiseq(f))
+
+
+# In[34]:
+
+
+for rule in rules3:
+    delta = rule[0] + rule[2] + rule[4] + Ei(rule[1])[int(Ei(rule[3])[int(rule[2])])]
+    theta = rule[1] + rule[3] + Ei(rule[1])[int(rule[3])] + rule[1]
+    for f in periodic_factors:
+        match = re.match('([012R][012R])*('+ gpc.makeBiseq(delta, theta) + ')', f)
+        if match:
+            print(delta, " ", theta)
+            print(gpc.parseBiseq(f))
+            print()
+
+
+# In[35]:
+
+
+re.match('([012R][012R])*('+ periodic_factors[0] + ')', gpc.makeBiseq("0120", "2102"))
+
+
+# In[36]:
+
+
+s = '021120021120021120'
+t = '02112002'
+re.match(t,s)
+
+
+# 0120   2102
+# ['012012012', '210210210']
+# 
+# 0210   2012
+# ['210210210', '012012012']
+# 
+# 1021   1201
+# ['210210210', '012012012']
+# 
+# 1201   1021
+# ['012012012', '210210210']
+# 
+# 2012   0210
+# ['012012012', '210210210']
+# 
+# 2102   0120
+# ['210210210', '012012012']
+# 
 
 # In[ ]:
 
