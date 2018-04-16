@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[17]:
 
 
 import itertools
@@ -70,7 +70,7 @@ class Normalizer012:
 
         # Post-processing
         new_delta, new_theta = (biseq[0::2], biseq[1::2])
-        logging.info("bi-sequence before changing the letters back: (" +                         delta + ", " + theta + ")")
+        logging.info("bi-sequence before changing the letters back: (" +                         new_delta + ", " + new_theta + ")")
 
         new_delta, new_theta = self._change_letters_order_back(new_delta, 
                                                                new_theta, substitution)
@@ -243,7 +243,7 @@ class _Normalization012_rules_checker:
         for prefix_rule in self._prefix_rules:
             match = re.match(prefix_rule[0], biseq)
             if match:
-                logging.debug("prefix rule: " + str(prefix_rule))
+                logging.info("prefix rule: " + str(prefix_rule))
                 index = match.end() - 2
                 return [index, prefix_rule[1]] # place and correction
     
@@ -256,7 +256,7 @@ class _Normalization012_rules_checker:
             for rule in _rules:
                 match = re.match(rule, biseq)
                 if match:
-                    logging.debug("rule" + str(rules_index) + ": " +                     str(self._print_factor_rule(rule)) +
+                    logging.info("rule" + str(rules_index) + ": " +                     str(self._print_factor_rule(rule)) +
                     " in biseq " + str((biseq[0::2], biseq[1::2])))
                     
                     position = match.end() - 2 # The position to be corrected
@@ -264,7 +264,7 @@ class _Normalization012_rules_checker:
                     matches.append([position, self._factor_rules_replacement(rules_index, match.group(2))])
                     biseq = biseq[:position + 3]
 
-        logging.info("all non-prefix matches: " + str(matches))
+        logging.debug("all non-prefix matches: " + str(matches))
         
         # Finding final factor rule (leftmost)
         if matches:
@@ -654,10 +654,4 @@ def _check_dt(delta, theta):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-
-
-# In[ ]:
-
-
-
 

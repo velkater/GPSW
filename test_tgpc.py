@@ -57,16 +57,6 @@ class TestNormalization012(unittest.TestCase):
         for d, t, result in testcases:
             self.assertEqual(nn.normalize(d,t), result)
 
-
-# In[ ]:
-
-
 if __name__ == '__main__':
     unittest.main()
-
-
-# In[ ]:
-
-
-
 
